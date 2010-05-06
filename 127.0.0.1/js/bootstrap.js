@@ -15,6 +15,7 @@ system.use("com.google.code.date"); // include datejs lib
 system.use("GCal");
 system.use("tests.GCal_tests");
 //system.use("SweetSoft");
+//system.use("tests.SweetSoft_tests");
 system.use("jsunity_0_6");
 
 function objToString(obj) {

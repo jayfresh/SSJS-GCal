@@ -9,38 +9,12 @@ system.use("com.google.code.date");
 system.use("com.joyent.Resource");
 
 */
-
+SweetSoft = {};
 (function() {
-	if(!SweetSoft) {
-		SweetSoft = {};
-	}
 	
 	SweetSoft.config = getConfig(),
 		DEFAULTS = {
-			accounts: {
-				"supermum1@sweetspot.com": {
-					account: {
-						name: "Lady Gaga",
-						phone: "07890 123456",
-						sessionToken: "abcd"
-					},
-					calendars: {
-						freetime: "1234",
-						viewings: "5678"
-					}
-				},
-				"supermum2@sweetspot.com": {
-					account: {
-						name: "Dame Edna",
-						phone: "07123 456789",
-						sessionToken: "efgh"
-					},
-					calendars: {
-						freetime: "9012",
-						viewings: "3456"
-					}
-				}
-			},
+			accounts = [],
 			eventTitleTemplate: "Viewing for <%=property%>",
 			eventDescriptionTemplate: "Hello <%=student_name%>, \n\n" +
 			"Your booking for <%=property%> is at <%=date_time%>. \n\n" + 
@@ -105,43 +79,34 @@ system.use("com.joyent.Resource");
 	};
 	
 	function getConfig() {
-		var accounts = {},
+		var accounts,
 			eventTitleTemplate,
 			eventDescriptionTemplate,
 			minSlotMinutes;
 		
-		if(!SweetSoft.debugMode) {
-			var missingOptions = [];
-			var Account = new Resource('account');
-			accountsArr = Account.search({});
-			if(!accountsArr.length) {
-				missingOptions.push('accounts');
+		var missingOptions = [];
+		
+		accounts = GCal.listAccounts();
+		if(!accounts.length) {
+			missingOptions.push('accounts');
+		}
+
+		var AdminInfo = new Resource('adminInfo');
+		function getAdminOption(id) {
+			try {
+				return AdminInfo.search(id).value;
+			} catch(ex) {
+				missingOptions.push(id);
 			}
-			for(var i=0, il=accountsArr.length, account; i<il; i++) {
-				account = accountsArr[i];
-				accounts[account.id] = account.value;
-			}
-			var AdminInfo = new Resource('adminInfo');
-			function getAdminOption(id) {
-				try {
-					return AdminInfo.search(id).value;
-				} catch(ex) {
-					missingOptions.push(id);
-				}
-			}
-			eventTitleTemplate = getAdminOption('eventTitleTemplate');
-			eventDescriptionTemplate = getAdminOption('eventDescriptionTemplate');
-			minSlotMinutes = getAdminOption('minSlotsMinutes');
-			if(missingOptions.length) {
-				var e = new Error();
-				e.message = "SweetSoft.GCal error: getConfig: missing setup options: "+missingOptions.join(", ");
-				throw e;
-			}
-		} else {
-			accounts = DEFAULTS.accounts;
-			eventTitleTemplate = DEFAULTS.eventTitleTemplate;
-			eventDescriptionTemplate = DEFAULTS.eventDescriptionTemplate;
-			minSlotMinutes = DEFAULTS.minSlotMinutes;	
+		}
+		eventTitleTemplate = getAdminOption('eventTitleTemplate') || DEFAULTS.eventTitleTemplate;
+		eventDescriptionTemplate = getAdminOption('eventDescriptionTemplate') || DEFAULTS.eventDescriptionTemplate;
+		minSlotMinutes = getAdminOption('minSlotsMinutes') || DEFAULTS.minSlotsMinutes;
+		
+		if(missingOptions.length) {
+			var e = new Error();
+			e.message = "SweetSoft.GCal error: getConfig: missing or blank setup options: "+missingOptions.join(", ");
+			throw e;
 		}
 		
 		return {
@@ -173,56 +138,3 @@ system.use("com.joyent.Resource");
 	}
 
 })();
-
-SweetSoft.debug_mode = true;
-SweetSoft.test_defaults = {
-	createAppointment: {
-		superMumID: "supermum2",
-		property: "53 Kenilworth Avenue",
-		start_time: "13:00",
-		student_name: "Bob-a-job",
-		student_email: "bob@job.com",
-		student_phone: "0789",
-		attendees: [
-			"jeff@koons.com",
-			"philip@larkin.com"
-		]
-	},
-	listFreeSlots: {
-		superMumID: "supermum1",
-		event1: {
-			startTime: "13:00",
-			endTime: "14:00"
-		},
-		event2: {
-			startTime: "15:00",
-			endTime: "17:00"
-		}
-	}
-};
-SweetSoft.tests = {
-	createAppointment: function(data) {
-		var options = SweetSoft.test_defaults.createAppointment;
-		SweetSoft.createAppointment(options);
-		/*
-		var options = {
-			title: string_template(config.titleTemplate, data),
-			description: string_template(config.descriptionTemplate, data),
-			where: data.property,
-			startMin: data.startTime,
-			startMax: data.endTime,
-			organiser_name: account.name,
-			organiser_email: data.superMumID,
-			attendees: attendees,
-			sessionToken: account.sessionToken,
-			calendarID: account.calendars.viewings
-		};*/
-		
-		/* TO-DO: mock GCal.newEvent and verify options is of the form above */
-	},
-	listFreeSlots: function() {
-		var options = SweetSoft.test_defaults.getEventsByTime;
-		var slots = SweetSoft.getEventsByTime(options.superMumID);
-		/* TO-DO: mock GCal.getEventsByTime to return SweetSoft.test_defaults.listFreeSlots' events; verify that slots contains what I expect it to */
-	}
-};
