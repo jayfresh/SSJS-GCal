@@ -39,7 +39,8 @@ GET('/', function() {
 	    out += "<div>" + s + "</div>";
 	};
 	jsUnity.run(
-		GCal.tests.newEvent
+		//GCal.tests.newEvent,
+		GCal.tests.getEventsByTime
 	);
 	out += "<p>"+objToString(Log)+"</p>";
 	return out;

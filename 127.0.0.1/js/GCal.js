@@ -9,6 +9,8 @@ given a string for an event description (which is also a confirmation email), in
 requires:
 system.use("com.google.code.date");
 
+TO-DO: provide mechanism to authorise your Google account, get and save your session token against your email address (ID); provide mechanism to list saved ID's and session tokens
+
 */
 var GCal = {};
 (function() {
@@ -17,7 +19,7 @@ var GCal = {};
 
 	/* public API */
 	GCal.newEvent = function(options) {
-		/* TO-DO: handle the gsessionid, as it is not present and that is causing 400 errors, I guess
+		/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance
 			url example: http://www.google.com/calendar/feeds/default/private/full?gsessionid=pHYtJI3L2ZGy09AQycVaEA
 		 */
 		if(!options) {
@@ -43,13 +45,31 @@ var GCal = {};
 		return createEvent(calendarID,eventXML);
 	};
 	GCal.getEventsByTime = function(options) {
+		if(!options) {
+			throw new Error('Error: GCal.getEventsByTime: no options provided');
+		}
 		if(options.sessionToken) {
 			setCurrentSessionToken(options.sessionToken);
 		}
 		var calendarID = options.calendarID;
-		var response = makeCalRequest('events', calendarID, {
-			startMin: options.startMin,
-			startMax: options.startMax
+		var startMin = options.startMin,
+			startMax = options.startMax;
+		/* JRL: if startMin/Max are not already Date objects, they are assumed to be ISO strings e.g. 2010-05-04T12:00:00.000Z */
+		if(typeof startMin === "string") {
+			var d = new Date();
+			d.setISO8601(startMin);
+			startMin = d;
+		}
+		if(typeof startMax === "string") {
+			d = new Date();
+			d.setISO8601(startMax);
+			startMax = d;
+		}
+		var response = makeCalRequest({
+			type: 'events',
+			calendarID: calendarID,
+			startMin: startMin,
+			startMax: startMax
 		});
 		var eventsXML = makeXML(response);
 		var atom = Namespace('http://www.w3.org/2005/Atom');
@@ -58,12 +78,19 @@ var GCal = {};
 		var when, startTime, endTime, events = [];
 		for each (var entry in entries) {
 			when = entry.gd::when;
-			events.push({
-				startTime: when.@startTime,
-				endTime: when.@endTime	
-			});
+			startTime = when.@startTime.toString();
+			endTime = when.@endTime.toString();
+			if(startTime && endTime) {
+				events.push({
+					startTime: when.@startTime,
+					endTime: when.@endTime	
+				});
+			}
 		}
 		return events;
+	};
+	GCal.clearSessionToken = function() {
+		setCurrentSessionToken();
 	};
 	
 	function getCurrentSessionToken() {
@@ -97,7 +124,6 @@ var GCal = {};
 		</entry>;	
 		
 		var attendees = event.attendees;
-		// TO-DO: test this XML form out - does it create the correct attendees on an event? - as I've made the gd namespace a part of the who node, rather than using gd.who and gd.attendeeType
 		for(var i=0, il=attendees.length, attendee; i<il; i++) {
 			attendee = attendees[i];
 			eventXML.who += <who xmlns="http://schemas.google.com/g/2005" rel="http://schemas.google.com/g/2005#event.attendee" valueString={attendee.name} email={attendee.email}>
@@ -134,10 +160,10 @@ var GCal = {};
 			url += "/default/private/full";
 		}
 		if (type === 'events') {
-			url += "/"+calendarID+"/private/basic"; // e.g. url = "http://www.google.com/calendar/feeds/vs92sk1epj8hs6o7l19b2n3flk@group.calendar.google.com/private/basic"
-			var startMin = obj.startMin.toISOString();
-			var startMax = obj.startMax.toISOString();
-			query = "start-min="+startMin+"&"+"start-max"+startMax; // e.g. "start-min=2006-03-16T00:00:00&start-max=2006-03-24T23:59:59"
+			url += "/"+calendarID+"/private/full";
+			var startMin = options.startMin.toISOString();
+			var startMax = options.startMax.toISOString();
+			query = "start-min="+startMin+"&"+"start-max="+startMax;
 		}
 		
 		if(query) {
@@ -149,6 +175,9 @@ var GCal = {};
 			'GData-Version', '2'
 		);
 		var response = system.http.request(method, url, headers, data);
+		if(response.code !== '302' && response.code !== '200') {
+			throw new Error('Error: GCal makeCalRequest: bad response code '+response.code+': '+response.content);
+		}
 		if(response.code === '302') {
 			location = response.headers.location;
 			/* JRL: could save the gsessionid for faster performance */
@@ -166,5 +195,31 @@ var GCal = {};
 		return xml;
 	}
 	
+	/* thanks to http://delete.me.uk/2005/03/iso8601.html for this function */
+	Date.prototype.setISO8601 = function (string) {
+		var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+			"(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+			"(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+		var d = string.match(new RegExp(regexp));
+		
+		var offset = 0;
+		var date = new Date(d[1], 0, 1);
+		
+		if (d[3]) { date.setMonth(d[3] - 1); }
+		if (d[5]) { date.setDate(d[5]); }
+		if (d[7]) { date.setHours(d[7]); }
+		if (d[8]) { date.setMinutes(d[8]); }
+		if (d[10]) { date.setSeconds(d[10]); }
+		if (d[12]) { date.setMilliseconds(Number("0." + d[12]) * 1000); }
+		if (d[14]) {
+			offset = (Number(d[16]) * 60) + Number(d[17]);
+			offset *= ((d[15] == '-') ? 1 : -1);
+		}
+		
+		offset -= date.getTimezoneOffset();
+		time = (Number(date) + (offset * 60 * 1000));
+		this.setTime(Number(time));
+	}
+		
 })();
 
