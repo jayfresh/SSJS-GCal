@@ -1,7 +1,7 @@
 /* TESTS for GCal.js
 
 requires:
-jsunity_0_6.js;
+jsunity_0_6.js
 
 */
 GCal.test_data = {
@@ -165,7 +165,7 @@ GCal.tests = {
 				}
 			};
 			var events = GCal.getEventsByTime(options);
-			assertEqual(events.length, 2);
+			assertEqual(events.length, 1);
 			system.http.request = request_old;
 		},
 		'test - it should return an array of event objects given a startMin and a startMax': function() {

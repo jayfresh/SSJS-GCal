@@ -7,22 +7,92 @@ given a time and calendar's owner's ID/name, create a new event in that calendar
 given a string for an event description (which is also a confirmation email), insert that into a new event
 
 requires:
+system.use("com.joyent.Sammy");
 system.use("com.google.code.date");
 
-TO-DO: provide mechanism to authorise your Google account, get and save your session token against your email address (ID); provide mechanism to list saved ID's and session tokens
+TO-DO: provide mechanism to list saved ID's and session tokens
 
 */
+
+/* new routes to support AuthSub set up */
+GET('/auth', function() {
+	var host = this.request.headers.Host;
+	var url = "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2fcalendar%2Ffeeds%2F&session=1&secure=0&next=http%3A%2F%2F"+host+"%2Fsession";
+	return redirect(url);
+});
+
+GET('/session', function() {
+	var token = this.request.query.token;
+	var redirect = this.request.query.redirect || '';
+	if(!token) {
+		return "no token in query";
+	} else {
+		var sessionToken = GCal.convertTokenToSessionToken(token);
+		redirect('/newAccount?sessionToken='+sessionToken);
+	}
+});
+
+GET('/newAccount', function() {
+	var sessionToken = this.request.query.sessionToken;
+	var id = GCal.getAccountIdForToken(sessionToken);
+	var writeSuccess = GCal.storeNewAccount({
+		id: name,
+		sessionToken: sessionToken
+	});
+	return id; // JRL: debug - remove this line and uncomment one below
+	//redirect('/'+redirect+'?id='+id+'&sessionToken='+sessionToken+'&writeSuccess='+writeSuccess);
+});
+
+/* this is an example use, not fundamental to API */
+GET('/listAccounts', function() {
+	var accounts = GCal.listAccounts();
+	/* TO-DO: convert accounts into an array, so can test length with accounts.length */
+	accounts = objToString(accounts);
+	return "<h1>Accounts</h1>\n" + accounts;
+});
+
 var GCal = {};
 (function() {
 	
 	var currentSessionToken;
 
 	/* public API */
-	GCal.accounts = {}; // accountID: { token: xyz }
+	GCal.resourceName = "GCalAccount";
+	GCal.convertTokenToSessionToken = function(token) {
+		var url = "https://www.google.com/accounts/AuthSubSessionToken";
+		var headers = [
+			'Authorization', 'AuthSub token="'+token+'"'
+		];
+		var response = system.http.request("GET", url, headers);
+		var sessionToken = response.content.split('=')[1];
+		sessionToken = sessionToken.replace(/\s/g,"");
+		return sessionToken;
+	};
+	GCal.getAccountIdForToken = function(sessionToken) {
+		setCurrentSessionToken({
+			sessionToken: sessionToken
+		});
+		var response = makeCalRequest({
+			type: 'listCalendars'
+		});
+		var xml = makeXML(response);
+		var atom = Namespace('http://www.w3.org/2005/Atom');
+		var author = xml.atom::author;
+		var id = author.atom::email;
+		return id;
+	};
+	GCal.storeNewAccount = function(obj) {
+		if(obj.id && obj.sessionToken) {
+			return system.datastore.write(GCal.resourceName, toStore);
+		} else {
+			throw new Error("Error: GCal.storeNewAccount: no id or sessionToken provided");
+		}
+	};
+	GCal.listAccounts = function() {
+		var accounts = system.datastore.search(GCal.resourceName, {});
+		return accounts;
+	};
 	GCal.newEvent = function(options) {
-		/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance
-			url example: http://www.google.com/calendar/feeds/default/private/full?gsessionid=pHYtJI3L2ZGy09AQycVaEA
-		 */
 		if(!options) {
 			throw new Error('Error: GCal.newEvent: no options provided');
 		}
@@ -106,7 +176,7 @@ var GCal = {};
 			token = options.sessionToken;
 		} else if(options.accountID) {
 			accountID = options.accountID;
-			account = GCal.accounts[accountID];
+			account = GCal.getAccounts()[accountID];
 			if(account && account.sessionToken) {
 				token = account.sessionToken;
 			} else {
@@ -161,19 +231,25 @@ var GCal = {};
 	
 	function makeCalRequest(options) {
 		var type = options.type,
-			calendarID = options.calendarID,
 			data = options.data,
 			url = "http://www.google.com/calendar/feeds",
-			requestBody,
 			query,
 			method = "GET",
 			headers = options.headers || [];
 		
+		/* JRL: /settings is experimental, so not using it now
+		if(type === 'settings') {
+			url += '/default/settings';
+		}*/
+		if(type === 'listCalendars') {
+			url += '/default';
+		}
 		if(type === 'new') {
 			method = "POST";
 			url += "/default/private/full";
 		}
 		if (type === 'events') {
+			var calendarID = options.calendarID;
 			url += "/"+calendarID+"/private/full";
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
@@ -186,15 +262,17 @@ var GCal = {};
 		var sessionToken = getCurrentSessionToken();
 		headers.push(
 			'Authorization', 'AuthSub token="'+sessionToken+'"',
-			'GData-Version', '2'
+			'GData-Version', '2',
+			'Cookie', ''
 		);
 		var response = system.http.request(method, url, headers, data);
 		if(response.code !== '302' && response.code !== '200' && response.code !== '201') {
-			throw new Error('Error: GCal makeCalRequest: bad response code '+response.code+': '+response.content);
+			throw new Error('Error: GCal makeCalRequest for '+url+': bad response code '+response.code+': '+response.content+' ... '+headers[0]+' '+headers[1]+' '+headers[2]+' '+headers[3]);
 		}
+		/* is this even necessary? I don't know if system.http.request follows 302's */
 		if(response.code === '302') {
 			location = response.headers.location;
-			/* JRL: could save the gsessionid for faster performance */
+			/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance; although the "S" cookie has a similar effect and is also important */
 			var gsessionid = location.substring(location.indexOf('?')+1).split('=')[1];
 			response = system.http.request(method, location, headers, data);
 		}
