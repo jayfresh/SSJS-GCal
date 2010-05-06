@@ -18,6 +18,7 @@ var GCal = {};
 	var currentSessionToken;
 
 	/* public API */
+	GCal.accounts = {}; // accountID: { token: xyz }
 	GCal.newEvent = function(options) {
 		/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance
 			url example: http://www.google.com/calendar/feeds/default/private/full?gsessionid=pHYtJI3L2ZGy09AQycVaEA
@@ -25,9 +26,7 @@ var GCal = {};
 		if(!options) {
 			throw new Error('Error: GCal.newEvent: no options provided');
 		}
-		if(options.sessionToken) {
-			setCurrentSessionToken(options.sessionToken);
-		}
+		setCurrentSessionToken(options);
 		var calendarID = options.calendarID;
 		
 		var event = {
@@ -48,9 +47,7 @@ var GCal = {};
 		if(!options) {
 			throw new Error('Error: GCal.getEventsByTime: no options provided');
 		}
-		if(options.sessionToken) {
-			setCurrentSessionToken(options.sessionToken);
-		}
+		setCurrentSessionToken(options);
 		var calendarID = options.calendarID;
 		var startMin = options.startMin,
 			startMax = options.startMax;
@@ -89,9 +86,10 @@ var GCal = {};
 		}
 		return events;
 	};
+	/* JRL: not including this until have a use case
 	GCal.clearSessionToken = function() {
 		setCurrentSessionToken();
-	};
+	};*/
 	
 	function getCurrentSessionToken() {
 		if(!currentSessionToken) {
@@ -100,8 +98,24 @@ var GCal = {};
 		return currentSessionToken;
 	}
 	
-	function setCurrentSessionToken(sessionToken) {
-		currentSessionToken = sessionToken;
+	function setCurrentSessionToken(options) {
+		var token, account, accountID;
+		if(!options) {
+			currentSessionToken = null;
+		} else if(options.sessionToken) {
+			token = options.sessionToken;
+		} else if(options.accountID) {
+			accountID = options.accountID;
+			account = GCal.accounts[accountID];
+			if(account && account.sessionToken) {
+				token = account.sessionToken;
+			} else {
+				throw new Error('Error: GCal setCurrentSessionToken: no token for accountID '+accountID);
+			}
+		} else {
+			throw new Error('Error: GCal setCurrentSessionToken: bad token: '+token);
+		}
+		currentSessionToken = token;
 	}
 		
 	function createEventXML(event) {
@@ -175,7 +189,7 @@ var GCal = {};
 			'GData-Version', '2'
 		);
 		var response = system.http.request(method, url, headers, data);
-		if(response.code !== '302' && response.code !== '200') {
+		if(response.code !== '302' && response.code !== '200' && response.code !== '201') {
 			throw new Error('Error: GCal makeCalRequest: bad response code '+response.code+': '+response.content);
 		}
 		if(response.code === '302') {

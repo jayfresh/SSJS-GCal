@@ -39,7 +39,7 @@ GCal.test_data = {
 			<gd:eventStatus value="http://schemas.google.com/g/2005#event.confirmed">
 			</gd:eventStatus>
 			<gd:where valueString="my location"></gd:where>
-			<gd:when startTime="2010-05-04T12:00:00.000Z" endTime="2010-05-04T13:30:00.000Z"></gd:when>
+			<gd:when startTime="2010-05-05T12:00:00.000Z" endTime="2010-05-05T13:30:00.000Z"></gd:when>
 			<who xmlns="http://schemas.google.com/g/2005" rel="http://schemas.google.com/g/2005#event.attendee" valueString="Boris" email="mayor@example.com">
 				<attendeeType value="http://schemas.google.com/g/2005#event.required">
 				</attendeeType>
@@ -96,41 +96,64 @@ GCal.test_data = {
 	}
 };
 
-/* at the moment, the tests will result in one new event being created in your default calendar; you will have to remove it if you want the getEventsByTime tests to pass the next time you run the tests */
-
+/* at the moment, the newEvent tests will result in two new events being created in your default calendar; the getEventsByTime tests will only pass if there are two events in the window it looks at */
 GCal.tests = {
 	newEvent: {
+		suiteName: 'newEvent',
 		'test - it should throw an error if there are no options supplied': function() {
 			assertException(function() { GCal.newEvent(); });
 		},
-		'test - it should throw an error if there is no sessionToken supplied and one is not set': function() {	
+		'test - it should throw an error if there is no sessionToken and no account ID supplied': function() {	
 			assertException(function() { GCal.newEvent({}); });
+		},
+		'test - it should throw an error if there is an account ID supplied that has no sessionToken set up': function() {
+			assertException(function() { GCal.newEvent({
+				accountID: "does.not@exist.com"
+			}); });
 		},
 		'test - it should create correct event XML given an options object': function() {
 			var request_old = system.http.request;
+			var returnXML;
 			system.http.request = function(method, url, headers, data) {
-				return data;
+				return {
+					code: '201',
+					content: data
+				}
 			};
 			var options = GCal.test_data.newEvent.options;
-			var eventXML = GCal.newEvent(options);
-			assertEquality(eventXML,GCal.test_data.newEvent.xmlToSend);
+			var response = GCal.newEvent(options);
+			var eventXML = response.content;
 			system.http.request = request_old;
+			assertEquality(eventXML,GCal.test_data.newEvent.xmlToSend);
 		},
-		'test - it should add a new event to a calendar': function() {
+		'test - it should add a new event to a calendar given a valid sessionToken': function() {
 			var options = GCal.test_data.newEvent.options;
 			var response = GCal.newEvent(options);
 			var eventXMLString = response.content;
 			var re = new RegExp('<title>'+options.title+'<\/title>');
 			assertMatch(re,eventXMLString);
+		},
+		'test - it should add a new event to a calendar given an accountID with a valid sessionToken set': function() {
+			var options = GCal.test_data.newEvent.options;
+			
+			var response = GCal.newEvent(options);
+			var eventXMLString = response.content;
+			var re = new RegExp('<title>'+options.title+'<\/title>');
+			assertMatch(re,eventXMLString);	
 		}
 	},
 	getEventsByTime: {
+		suiteName: 'getEventsByTime',
 		'test - it should throw an error if there are no options supplied': function() {
 			assertException(function() { GCal.getEventsByTime(); });
 		},
-		'test - it should throw an error if there is no sessionToken supplied': function() {
-			GCal.clearSessionToken();
+		'test - it should throw an error if there is no sessionToken and no account ID supplied': function() {
 			assertException(function() { GCal.getEventsByTime({}); });
+		},
+		'test - it should throw an error if there is an account ID supplied that has no sessionToken set up': function() {
+			assertException(function() { GCal.getEventsByTime({
+				accountID: "does.not@exist.com"
+			}); });
 		},
 		'test - it should decode an atom feed of events into an array of objects': function() {
 			var options = GCal.test_data.getEventsByTime.options;
@@ -142,13 +165,13 @@ GCal.tests = {
 				}
 			};
 			var events = GCal.getEventsByTime(options);
-			assertEqual(events.length, 1);
+			assertEqual(events.length, 2);
 			system.http.request = request_old;
 		},
 		'test - it should return an array of event objects given a startMin and a startMax': function() {
 			var options = GCal.test_data.getEventsByTime.options;
 			var events = GCal.getEventsByTime(options);
-			assertEqual(events.length, 1);
+			assertEqual(events.length, 2);
 		}
 	}
 };

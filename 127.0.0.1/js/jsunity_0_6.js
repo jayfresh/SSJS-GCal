@@ -171,7 +171,7 @@ jsUnity = (function () {
         assertEquality: function (expected, actual, message) {
             if (expected != actual) {
                 throw fmt("?: (?) is not identical to (?)",
-                    message || "assertIdentical", actual, expected);
+                    message || "assertEquality", actual, expected);
             }
         },
         
