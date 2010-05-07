@@ -13,10 +13,11 @@ system.use("com.joyent.Sammy");
 system.use("com.joyent.Resource");
 system.use("com.google.code.date"); // include datejs lib
 system.use("GCal");
-system.use("tests.GCal_tests");
-//system.use("SweetSoft");
-//system.use("tests.SweetSoft_tests");
+system.use("SweetSoft");
 system.use("jsunity_0_6");
+//system.use("tests.GCal_tests");
+system.use("tests.SweetSoft_tests");
+
 
 function objToString(obj) {
 	if (typeof obj === "string") {
@@ -41,7 +42,9 @@ GET('/', function() {
 	};
 	jsUnity.run(
 		//GCal.tests.newEvent,
-		GCal.tests.getEventsByTime
+		//GCal.tests.getEventsByTime
+		//SweetSoft.tests.createAppointment
+		SweetSoft.tests.listFreeSlots
 	);
 	out += "<p>"+objToString(Log)+"</p>";
 	return out;

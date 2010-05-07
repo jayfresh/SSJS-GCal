@@ -19,8 +19,10 @@ jsUnity = (function () {
             var arr = [];
             
             for (var p in v) {
-                arr.push(p);
-                arr.push(hash(v[p]));    
+            	if(v.hasOwnProperty(p)) {
+	                arr.push(p);
+	                arr.push(hash(v[p]));    
+				}
             }
             
             return arr.join("#");
@@ -34,6 +36,7 @@ jsUnity = (function () {
             try {
                 fn instanceof Function && fn();
             } catch (e) {
+            	Log['error'] = e.message;
                 return;
             }
 

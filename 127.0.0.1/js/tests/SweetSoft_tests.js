@@ -1,34 +1,22 @@
 SweetSoft.test_data = {
 	accounts: {
-		"supermum1@sweetspot.com": {
-			account: {
-				name: "Lady Gaga",
-				phone: "07890 123456",
-				sessionToken: "abcd"
-			},
-			calendars: {
-				freetime: "1234",
-				viewings: "5678"
-			}
+		"supermum1": {
+			name: "Lady Gaga",
+			email: "jnthnlstr@googlemail.com",
+			phone: "07890 123456"
 		},
-		"supermum2@sweetspot.com": {
-			account: {
-				name: "Dame Edna",
-				phone: "07123 456789",
-				sessionToken: "efgh"
-			},
-			calendars: {
-				freetime: "9012",
-				viewings: "3456"
-			}
+		"supermum2": { /* JRL: not real data */
+			name: "Dame Edna",
+			email: "supermum2@sweetspot.com",
+			phone: "07123 456789"
 		}
 	},
 	createAppointment: {
 		form_data: {
-			superMumID: "supermum2", /* TO-DO: set this to something that will have an account available */
+			superMumID: "supermum1",
 			property: "53 Kenilworth Avenue",
-			date: "2010-05-31",
-			start_time: "13:00",
+			date: "2010-05-05",
+			start_time: "12:00",
 			student_name: "Bob-a-job",
 			student_email: "bob@job.com",
 			student_phone: "0789",
@@ -37,28 +25,36 @@ SweetSoft.test_data = {
 				"philip@larkin.com"
 			]
 		},
-		options_to_use: { /* TO-DO: make the date_time, supermum_name and supermum_phone correct (the last two are probably dependent on how I decide to set up the accounts for testing */
-			title: "Viewing for 53 Kenilworth Avenue"
-			description: "Hello <%=student_name%>, \n\n" +
-			"Your booking for 53 Kenilworth Avenue is at <%=date_time%>. \n\n" + 
-			"If you need to reschedule your booking, please contact your SuperMum (<%=supermum_name%>) on: <%=supermum_phone%>. \n\n" +
-			"Your contact details: 0789, bob@job.com. \n\n" +
-			"See you soon! \n\nSweetSpot",
+		options_to_use: {
+			title: "Viewing for 53 Kenilworth Avenue",
+			description: "Hello Bob-a-job, \n\nYour booking for 53 Kenilworth Avenue is on 2010-05-05 at 12:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
 			where: "53 Kenilworth Avenue",
-			startMin: data.startMin, /* TO-DO: set this */
-			startMax: data.endTime, /* TO-DO: set this */
-			organiser_name: account.name, /* TO-DO: set this */
-			organiser_email: "supermum2", /* TO-DO: set this when the supermumID is set correctly above */
-			attendees: [
-				"jeff@koons.com",
-				"philip@larkin.com"
-			],
-			calendarID: account.calendars.viewings /* TO-DO: set this when I know how it is going to work */
+			startTime: new Date("Wed May 05 2010 12:00:00 GMT+0100 (BST)"),
+			endTime: (function() { /* JRL: based on default slot length being 30 minutes */
+				var d = new Date("Wed May 05 2010 12:00:00 GMT+0100 (BST)");
+				return d.add(30).minutes();
+			})(),
+			organiser_name: "Lady Gaga",
+			organiser_email: "jnthnlstr@googlemail.com",
+			attendees: [{
+				name: "Bob-a-job",
+				email: "bob@job.com"
+			},
+			{
+				name: "jeff@koons.com",
+				email: "jeff@koons.com"
+			},
+			{
+				name: "philip@larkin.com",
+				email: "philip@larkin.com"
+			}],
+			accountID: "jnthnlstr@googlemail.com",
+			calendarName: "viewings"
 		}
 	},
 	listFreeSlots: {
-		invalidAccountID: "does.not@exist.com",
-		validAccountID: "jnthnlstr@googlemail.com"
+		invalidAccountID: "supermum2",
+		validAccountID: "supermum1"
 	}
 };
 
@@ -74,20 +70,28 @@ SweetSoft.tests = {
 		'test - it should throw an error if no arguments are supplied': function() {
 			assertException(function() { SweetSoft.createAppointment(); });
 		},
-		'test - it should throw an error if no accountID is supplied': function() {
+		'test - it should throw an error if the following are not supplied as properties of an object - superMumID, property, date, start_time, student_name, student_email, student_phone, attendees': function() {
 			assertException(function() { SweetSoft.createAppointment({}); });
 		},
 		'test - it should take data coming from the SweetSpot property pages and call GCal.newEvent with the options set correctly to create a new event': function(data) {
 			var form_data = SweetSoft.test_data.createAppointment.form_data;
-			var options_to_use = SweetSoft.test_data.createAppointment.options_to_use; /* TO-DO: set these all correctly - see above */
+			var options_to_use = SweetSoft.test_data.createAppointment.options_to_use;
+
+			var error;
 			var old_newEvent = GCal.newEvent;
-			var match;
 			GCal.newEvent = function(options) {
-				match = compare(options,options_to_use); // TO-DO: make compare match the objects (use hash?)
+				try {
+					assertEqual(options,options_to_use);
+				} catch(e) {
+					error = e;
+				}
 			};
+			var old_accounts = SweetSoft.config.accounts;
+			SweetSoft.config.accounts = SweetSoft.test_data.accounts;
 			SweetSoft.createAppointment(form_data);
 			GCal.newEvent = old_newEvent;
-			assertTrue(match);
+			SweetSoft.config.accounts = old_accounts;
+			assertUndefined(error);
 		}
 	},
 	listFreeSlots: {
@@ -99,11 +103,13 @@ SweetSoft.tests = {
 			assertException(function() { SweetSoft.listFreeSlots({}); });
 		},
 		'test - it should throw an error if no "freebusy" and "viewings" properties exist for the account specified by accountID': function() {
-			/* TO-DO: make sure the correct account details are set up in the datastore */
 			var accountID = SweetSoft.test_data.listFreeSlots.invalidAccountID;
+			var old_accounts = SweetSoft.config.accounts;
+			SweetSoft.config.accounts = SweetSoft.test_data.accounts;
 			assertException(function() { SweetSoft.listFreeSlots({
 				accountID: accountID
 			}) });
+			SweetSoft.config.accounts = old_accounts;
 		},
 		'test - it should return only the parts of a calendar today and tomorrow that do not have events scheduled for': function() {
 			/* TO-DO: make sure the correct account details are set up in the datastore */

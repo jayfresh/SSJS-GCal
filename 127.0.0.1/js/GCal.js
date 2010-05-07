@@ -12,6 +12,17 @@ system.use("com.google.code.date");
 
 TO-DO: provide mechanism to list saved ID's and session tokens
 
+GCal stores accounts as a "GCalAccount" Resource. Each account has this structure:
+{
+	id: "person1",
+	accountID: "jeff.smith@example.org",
+	sessionToken: "fg3hg94ugjvm___cFg",
+	calendars: [{
+		name: "Jeff's calendar",
+		id: "jeffff@gmail.com"
+	}]
+}
+
 */
 
 /* new routes to support AuthSub set up */
@@ -34,12 +45,10 @@ GET('/session', function() {
 
 GET('/newAccount', function() {
 	var sessionToken = this.request.query.sessionToken;
-	var id = GCal.getAccountIdForToken(sessionToken);
-	var writeSuccess = GCal.storeNewAccount({
-		id: name,
-		sessionToken: sessionToken
-	});
-	return id; // JRL: debug - remove this line and uncomment one below
+	var accountName = this.request.query.accountName;
+	var account = GCal.getAccountForToken(sessionToken);
+	var writeSuccess = GCal.storeNewAccount(accountName, account);
+	return objToString(account); // JRL: debug - remove this line and uncomment one below
 	//redirect('/'+redirect+'?id='+id+'&sessionToken='+sessionToken+'&writeSuccess='+writeSuccess);
 });
 
@@ -68,7 +77,7 @@ var GCal = {};
 		sessionToken = sessionToken.replace(/\s/g,"");
 		return sessionToken;
 	};
-	GCal.getAccountIdForToken = function(sessionToken) {
+	GCal.getAccountForToken = function(sessionToken) {
 		setCurrentSessionToken({
 			sessionToken: sessionToken
 		});
@@ -78,14 +87,33 @@ var GCal = {};
 		var xml = makeXML(response);
 		var atom = Namespace('http://www.w3.org/2005/Atom');
 		var author = xml.atom::author;
-		var id = author.atom::email;
-		return id;
+		var accountID = author.atom::email; /* JRL: this assumes a person's id is the same as their gmail address */
+		var entries = xml.atom::entry;
+		var calendars = [], id, title;
+		for each (var entry in entries) {
+			id = entry.atom::id.toString();
+			id = id.substring(id.lastIndexOf('/')+1);
+			title = entry.atom::title.toString();
+			calendars.push({
+				id: id
+				title: title
+			});
+		}
+		return {
+			accountID: accountID,
+			sessionToken: sessionToken,
+			calendars: calendars
+		}
 	};
-	GCal.storeNewAccount = function(obj) {
-		if(obj.id && obj.sessionToken) {
-			return system.datastore.write(GCal.resourceName, toStore);
+	GCal.storeNewAccount = function(accountName, account) {
+		if(!accountName) {
+			throw new Error("Error: GCal.storeNewAccount: no account name provided");
+		}
+		if(account.accountID && account.sessionToken) {
+			obj.id = accountName;
+			return system.datastore.write(GCal.resourceName, obj);
 		} else {
-			throw new Error("Error: GCal.storeNewAccount: no id or sessionToken provided");
+			throw new Error("Error: GCal.storeNewAccount: no accountID or sessionToken provided in account");
 		}
 	};
 	GCal.listAccounts = function() {
@@ -156,6 +184,7 @@ var GCal = {};
 		}
 		return events;
 	};
+	GCal.listCale
 	/* JRL: not including this until have a use case
 	GCal.clearSessionToken = function() {
 		setCurrentSessionToken();
