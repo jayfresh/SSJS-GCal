@@ -29,6 +29,10 @@ Date.today = function() {
 
 GET('/time', function() {
 	var d = new Date.today();
+	return d.toLocaleString() + " " + d.getTimezoneOffset();
+	return objToString(Date.CultureInfo.abbreviatedTimeZoneDST);
+	return Date.getTimezoneOffset.toString();
+	return d.setTimezone.toString();
 	return d.toString() + "  " + d.toString("HH:mm") + "  " + d.toString.toString();
 });
 
