@@ -31,6 +31,10 @@ During config setup, SweetSoft gets the accounts from Gcal and merges the 'calen
 
 TO-DO: write the mechanism for saving the admin info
 
+TO-DO: protect the admin system with a password
+
+TO-DO: get the JavaScript working appropriately on the bookings page
+
 */
 
 POST('/createAppointment', function() {
@@ -109,9 +113,10 @@ GET('/booking', function() {
 });
 
 GET('/listFreeSlots', function() {
+	var accountID = this.request.query.accountID;
 	SweetSoft.init();
 	var days = SweetSoft.listFreeSlots({
-		accountID: 'supermum1'
+		accountID: accountID
 	});
 	var dayList = {};
 	for(var day in days) {
