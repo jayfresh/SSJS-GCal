@@ -52,6 +52,10 @@ GET('/tests', function() {
 	return out;
 });
 
-GET('/', function() {
+GET('/admin', function() {
 	return redirect('/listSweetSoftAccounts');
+});
+
+GET('/', function() {
+	return redirect('/index.html');
 });

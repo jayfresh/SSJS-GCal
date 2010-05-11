@@ -56,8 +56,11 @@ POST('/createAppointment', function() {
 });
 
 GET('/booking', function() {
-	var query = this.query,
-		accountID = query.accountID;
+	var query = this.query;
+	if(!query) {
+		return "<p>Please add the ID of an account</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' size='40' /><input type='submit' /></form>";
+	}
+	var accountID = query.accountID;
 	if(!accountID) {
 		throw new Error("Error: no accountID supplied");
 	}
