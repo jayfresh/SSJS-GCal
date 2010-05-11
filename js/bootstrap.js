@@ -21,8 +21,8 @@ system.use("tests.SweetSoft_tests");
 
 GET('/time', function() {
 	var d = new Date.today();
-	d.setISO8601('2010-05-11T01:00:00.000Z');
-	return d.toString();
+	d.setISO8601('2010-05-11T09:00:00.000Z');
+	return d.toString() + " " + d.toString("HH:mm");
 	return d.toLocaleString() + " " + d.getTimezoneOffset();
 	return objToString(Date.CultureInfo.abbreviatedTimeZoneDST);
 	return Date.getTimezoneOffset.toString();
