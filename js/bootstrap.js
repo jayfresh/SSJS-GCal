@@ -29,7 +29,7 @@ Date.today = function() {
 
 GET('/time', function() {
 	var d = new Date.today();
-	return d.toISOString();
+	return d.toISOString() + "  " + d.toString("HH:mm");
 });
 
 function objToString(obj) {
