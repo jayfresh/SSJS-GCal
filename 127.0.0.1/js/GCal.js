@@ -10,54 +10,84 @@ requires:
 system.use("com.joyent.Sammy");
 system.use("com.google.code.date");
 
-TO-DO: provide mechanism to list saved ID's and session tokens
-
 GCal stores accounts as a "GCalAccount" Resource. Each account has this structure:
 {
 	id: "person1",
 	accountID: "jeff.smith@example.org",
 	sessionToken: "fg3hg94ugjvm___cFg",
-	calendars: [{
-		name: "Jeff's calendar",
-		id: "jeffff@gmail.com"
-	}]
+	calendars: {
+		"Jeff's calendar": "jeffff@gmail.com"
+	}
 }
+
+TO-DO: provide mechanism to list saved ID's and session tokens
+
+TO-DO: write tests for account creation and listing
 
 */
 
 /* new routes to support AuthSub set up */
 GET('/auth', function() {
 	var host = this.request.headers.Host;
-	var url = "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2fcalendar%2Ffeeds%2F&session=1&secure=0&next=http%3A%2F%2F"+host+"%2Fsession";
+	var accountName = this.request.query.accountName;
+	if(!accountName) {
+		return "Please provide an accountName parameter";
+	}
+	var url = "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2fcalendar%2Ffeeds%2F&session=1&secure=0&next=http%3A%2F%2F"+host+"%2Fsession?accountName="+encodeURIComponent(accountName);
 	return redirect(url);
 });
 
 GET('/session', function() {
-	var token = this.request.query.token;
-	var redirect = this.request.query.redirect || '';
+	var query = this.request.query,
+		token = query.token,
+		accountName = query.accountName;
 	if(!token) {
 		return "no token in query";
 	} else {
 		var sessionToken = GCal.convertTokenToSessionToken(token);
-		redirect('/newAccount?sessionToken='+sessionToken);
+		return redirect('/newGCalAccount?sessionToken='+sessionToken+'&accountName='+accountName);
 	}
 });
 
-GET('/newAccount', function() {
-	var sessionToken = this.request.query.sessionToken;
-	var accountName = this.request.query.accountName;
+GET('/newGCalAccount', function() {
+	var query = this.request.query,
+		accountName = query.accountName,
+		sessionToken = query.sessionToken,
+		path = query.redirect || 'listAccounts';
 	var account = GCal.getAccountForToken(sessionToken);
 	var writeSuccess = GCal.storeNewAccount(accountName, account);
-	return objToString(account); // JRL: debug - remove this line and uncomment one below
-	//redirect('/'+redirect+'?id='+id+'&sessionToken='+sessionToken+'&writeSuccess='+writeSuccess);
+	return redirect('/'+path+'?id='+id+'&sessionToken='+sessionToken+'&writeSuccess='+writeSuccess);
+});
+
+GET('/deleteGCalAccount', function() {
+	var accountName = this.request.query.accountName;
+	var url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
+	var removeSuccess = GCal.removeAccount(accountName);
+	return redirect(url);
 });
 
 /* this is an example use, not fundamental to API */
-GET('/listAccounts', function() {
+GET('/listGCalAccounts', function() {
 	var accounts = GCal.listAccounts();
-	/* TO-DO: convert accounts into an array, so can test length with accounts.length */
-	accounts = objToString(accounts);
-	return "<h1>Accounts</h1>\n" + accounts;
+	var out = "";
+	out += "<h1>GCal Accounts</h1>";
+	out += "<form action='/deleteGCalAccount' method='GET'><ul>";
+	for(var i=0, il=accounts.length, account, calendars, calendarNames; i<il; i++) {
+		account = accounts[i];
+		calendars = account.calendars;
+		calendarNames = [];
+		for(var calendar in calendars) {
+			calendarNames.push(calendar);
+			calendarNames.push(calendars[calendar]);
+		}
+		calendarNames = calendarNames.join(", ");
+		out += "<li>"+account.id+"<input type='radio' name='accountName' value='"+account.id+"' />";
+		out += "<br />calendarNames: "+calendarNames;
+		out += "<br />"+objToString(account)+"</li>";
+	}
+	out += "</ul>";
+	out += "<input type='submit' value='remove account' /></form>";
+	return out;
 });
 
 var GCal = {};
@@ -87,17 +117,14 @@ var GCal = {};
 		var xml = makeXML(response);
 		var atom = Namespace('http://www.w3.org/2005/Atom');
 		var author = xml.atom::author;
-		var accountID = author.atom::email; /* JRL: this assumes a person's id is the same as their gmail address */
+		var accountID = author.atom::email.text(); /* JRL: this assumes a person's id is the same as their gmail address */
 		var entries = xml.atom::entry;
-		var calendars = [], id, title;
+		var calendars = {}, id, title;
 		for each (var entry in entries) {
 			id = entry.atom::id.toString();
 			id = id.substring(id.lastIndexOf('/')+1);
 			title = entry.atom::title.toString();
-			calendars.push({
-				id: id
-				title: title
-			});
+			calendars[title] = id;
 		}
 		return {
 			accountID: accountID,
@@ -110,11 +137,23 @@ var GCal = {};
 			throw new Error("Error: GCal.storeNewAccount: no account name provided");
 		}
 		if(account.accountID && account.sessionToken) {
-			obj.id = accountName;
-			return system.datastore.write(GCal.resourceName, obj);
+			account.id = accountName;
+			return system.datastore.write(GCal.resourceName, account);
 		} else {
 			throw new Error("Error: GCal.storeNewAccount: no accountID or sessionToken provided in account");
 		}
+	};
+	GCal.getAccount = function(accountName) {
+		if(!accountName) {
+			throw new Error("Error: GCal.getAccount: no account name provided");
+		}
+		return system.datastore.get(GCal.resourceName, accountName);
+	};
+	GCal.removeAccount = function(accountName) {
+		if(!accountName) {
+			throw new Error("Error: GCal.deleteAccount: no account name provided");
+		}
+		return system.datastore.remove(GCal.resourceName, accountName);
 	};
 	GCal.listAccounts = function() {
 		var accounts = system.datastore.search(GCal.resourceName, {});
@@ -126,7 +165,11 @@ var GCal = {};
 		}
 		setCurrentSessionToken(options);
 		var calendarID = options.calendarID;
-		
+		var account = GCal.getAccount(options.accountName);
+		var calendar = account.calendars[calendarID];
+		if(!calendar) {
+			throw new Error("Error: GCal.newEvent: account "+accountName+" does not contain calendar "+calendarID);
+		}
 		var event = {
 			title: options.title,
 			description: options.description,
@@ -139,7 +182,7 @@ var GCal = {};
 		};
 		
 		var eventXML = createEventXML(event);
-		return createEvent(calendarID,eventXML);
+		return createEvent(calendar,eventXML);
 	};
 	GCal.getEventsByTime = function(options) {
 		if(!options) {
@@ -178,13 +221,13 @@ var GCal = {};
 			if(startTime && endTime) {
 				events.push({
 					startTime: when.@startTime,
-					endTime: when.@endTime	
+					endTime: when.@endTime
 				});
 			}
 		}
 		return events;
 	};
-	GCal.listCale
+	//GCal.listCale
 	/* JRL: not including this until have a use case
 	GCal.clearSessionToken = function() {
 		setCurrentSessionToken();
@@ -203,13 +246,15 @@ var GCal = {};
 			currentSessionToken = null;
 		} else if(options.sessionToken) {
 			token = options.sessionToken;
-		} else if(options.accountID) {
-			accountID = options.accountID;
-			account = GCal.getAccounts()[accountID];
-			if(account && account.sessionToken) {
+		} else if(options.accountName) {
+			accountName = options.accountName;
+			account = GCal.getAccount(accountName);
+			if(!account) {
+				throw new Error("Error: GCal setCurrentSessionToken: no account for accountName "+accountName+"... "+GCal.getAccount(accountName).length);
+			} else if(account.sessionToken) {
 				token = account.sessionToken;
 			} else {
-				throw new Error('Error: GCal setCurrentSessionToken: no token for accountID '+accountID);
+				throw new Error('Error: GCal setCurrentSessionToken: no token for accountName '+accountName);
 			}
 		} else {
 			throw new Error('Error: GCal setCurrentSessionToken: bad token: '+token);
@@ -264,9 +309,10 @@ var GCal = {};
 			url = "http://www.google.com/calendar/feeds",
 			query,
 			method = "GET",
-			headers = options.headers || [];
+			headers = options.headers || [],
+			calendarID = options.calendarID;
 		
-		/* JRL: /settings is experimental, so not using it now
+		/* JRL: '/settings' is experimental, so not using it now
 		if(type === 'settings') {
 			url += '/default/settings';
 		}*/
@@ -275,10 +321,9 @@ var GCal = {};
 		}
 		if(type === 'new') {
 			method = "POST";
-			url += "/default/private/full";
+			url += "/"+calendarID+"/private/full";
 		}
 		if (type === 'events') {
-			var calendarID = options.calendarID;
 			url += "/"+calendarID+"/private/full";
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
@@ -294,16 +339,20 @@ var GCal = {};
 			'GData-Version', '2',
 			'Cookie', ''
 		);
-		var response = system.http.request(method, url, headers, data);
-		if(response.code !== '302' && response.code !== '200' && response.code !== '201') {
-			throw new Error('Error: GCal makeCalRequest for '+url+': bad response code '+response.code+': '+response.content+' ... '+headers[0]+' '+headers[1]+' '+headers[2]+' '+headers[3]);
+		function checkResponse(response) {
+			if(response.code !== '302' && response.code !== '200' && response.code !== '201') {
+				throw new Error('Error: GCal makeCalRequest for '+url+': bad response code '+response.code+': '+response.content+' ... '+headers[0]+' '+headers[1]+' '+headers[2]+' '+headers[3]);
+			}
 		}
-		/* is this even necessary? I don't know if system.http.request follows 302's */
+		var response = system.http.request(method, url, headers, data);
+		checkResponse(response);
+		/* is this even necessary? I don't know if system.http.request follows 302's, but I think it does */
 		if(response.code === '302') {
 			location = response.headers.location;
 			/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance; although the "S" cookie has a similar effect and is also important */
 			var gsessionid = location.substring(location.indexOf('?')+1).split('=')[1];
 			response = system.http.request(method, location, headers, data);
+			checkResponse(response);
 		}
 		return response;
 	}

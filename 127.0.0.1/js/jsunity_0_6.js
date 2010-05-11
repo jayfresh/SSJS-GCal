@@ -36,7 +36,6 @@ jsUnity = (function () {
             try {
                 fn instanceof Function && fn();
             } catch (e) {
-            	Log['error'] = e.message;
                 return;
             }
 
@@ -381,7 +380,7 @@ jsUnity = (function () {
                         this.log("[PASSED] " + test.name);
                     } catch (e) {
                         suite.tearDown && suite.tearDown();
-
+						Log['e'] = objToString(e);
                         this.log("[FAILED] " + test.name + ": " + e);
                     }
                 }

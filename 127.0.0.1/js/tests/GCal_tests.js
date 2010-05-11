@@ -159,6 +159,7 @@ GCal.tests = {
 			var options = GCal.test_data.getEventsByTime.options;
 			var request_old = system.http.request;
 			system.http.request = function(method, url, headers, data) {
+				system.http.request = request_old;
 				return {
 					code: '200',
 					content: GCal.test_data.getEventsByTime.responseXML
@@ -166,7 +167,6 @@ GCal.tests = {
 			};
 			var events = GCal.getEventsByTime(options);
 			assertEqual(events.length, 1);
-			system.http.request = request_old;
 		},
 		'test - it should return an array of event objects given a startMin and a startMax': function() {
 			var options = GCal.test_data.getEventsByTime.options;

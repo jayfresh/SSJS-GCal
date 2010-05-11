@@ -16,26 +16,136 @@ SweetSoft stores accounts as a "SweetSoftAccount" resource. An account has this 
 	phone: "07123 456789"
 }
 
-During config setup, SweetSoft gets the accounts from Gcal and merges the calendar and sessionToken data. It matches by looking for accounts with an id equal to the id of the SweetSoft account. SweetSoft.config.accounts is set to an object of this structure:
+During config setup, SweetSoft gets the accounts from Gcal and merges the 'calendars' property. It matches by looking for accounts with an id equal to the id of the SweetSoft account. SweetSoft.config.accounts is set to an object of this structure:
 {
 	person1: {
 		id: "person1",
 		name: "Jeff Smith",
 		email: "jeff.smith@example.org",
 		phone: "07123 456789",
-		sessionToken: "fg3hg94ugjvm___cFg",
-		calendars: [{
-			name: "Jeff's Calendar",
-			id: "jeffff@gmail.com"
-		}]
+		calendars: {
+			"Jeff's calendar": "jeffff@gmail.com"
+		}
 	}
 }
 
-TO-DO: I've made quite a few changes that I haven't tested, to do with the way accounts are handled - I think I need to make sure that what I've written above is true; and that internally, SweetSoft and GCal look after accounts ok. Plus, I need to make sure there are appropriate ways to create and list accounts.
-
 TO-DO: write the algorithm that calculates free slots
 
+TO-DO: write the mechanism for saving the admin info
+
 */
+
+POST('/createAppointment', function() {
+	var query = this.request.body,
+		options = {
+			superMumID: query.superMumID,
+			property: query.property,
+			date_time: query.date_time,
+			date: query.date,
+			start_time: query.start_time,
+			student_name: query.student_name,
+			student_email: query.student_email,
+			student_phone: query.student_phone,
+			attendees: query.attendees
+		};
+	
+	// clean up data
+	if(options.attendees) {
+		options.attendees = options.attendees.split(","); /* TO-DO: remove any spaces at front or end of array elements */
+	}
+	if(options.date_time) {
+		var dateArr = options.date_time.split(" ");
+		options.date = dateArr[0];
+		options.start_time = dateArr[1];
+	}
+	SweetSoft.init();
+	var response = SweetSoft.createAppointment(options);
+	var queryString = "";
+	for(var i in options) {
+		queryString += "&"+i+"="+options[i];
+	}
+	queryString = queryString.substring(1);
+	return redirect('/property-thanks.html?'+queryString);
+});
+
+GET('/listFreeSlots', function() {
+	var today = new Date.now();
+	SweetSoft.listFreeSlots(today);
+	/* TO-DO: make this output something */
+});
+
+GET('/newSweetSoftAccount', function() {
+	var host = this.request.headers.Host;
+	var query = this.request.query,
+		accountName = query.accountName,
+		url = query.redirect,
+		token = query.token,
+		name = query.name,
+		phone = query.phone,
+		url = query.redirect || '';
+	if(!token) {
+		var encodedQuery = "";
+		for(var i in query) {
+			encodedQuery += "&"+i+"="+encodeURIComponent(query[i]);
+		}
+		encodedQuery = encodedQuery.substring(1);
+		var next = "http://"+host+"/newSweetSoftAccount?"+encodedQuery;
+		var gAuthURL = "https://www.google.com/accounts/AuthSubRequest?scope=http%3A%2F%2Fwww.google.com%2fcalendar%2Ffeeds%2F&session=1&secure=0&next="+encodeURIComponent(next);
+		return redirect(gAuthURL);
+	} else {
+		var sessionToken = GCal.convertTokenToSessionToken(token);
+		var GCalAccount = GCal.getAccountForToken(sessionToken);
+		var writeSuccess = GCal.storeNewAccount(accountName, GCalAccount);
+		if(!writeSuccess) {
+			return "there was an error creating a new GCal account for accountName "+accountName;
+		} else {
+			var SweetSoftAccount = {
+				id: accountName,
+				name: name,
+				email: GCalAccount.accountID,
+				phone: phone
+			};
+			writeSuccess = SweetSoft.storeNewAccount(accountName, SweetSoftAccount);
+			if(!writeSuccess) {
+				return "there was an error creating the SweetSoft account (although the GCal account was successfully created for accountName "+accountName;
+			}
+		}
+	}
+	return redirect('/'+url+'?writeSuccess='+writeSuccess);
+});
+
+GET('/deleteSweetSoftAccount', function() {
+	var accountName = this.request.query.accountName;
+	var url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
+	var removeSuccess = SweetSoft.removeAccount(accountName);
+	return redirect(url);
+});
+
+GET('/listSweetSoftAccounts', function() {
+	var out = "";
+	var accounts = SweetSoft.listAccounts();
+	out += "<h1>SweetSoft Accounts</h1>";
+	out += "<form action='/deleteSweetSoftAccount' method='GET'><ul>";
+	out += "<ul>";
+	for(var i=0, il=accounts.length, account; i<il; i++) {
+		account = accounts[i];
+		out += "<li>"+account.id+"<input type='radio' name='accountName' value='"+account.id+"' />";
+		out += "<br />"+objToString(account)+"</li>";
+	}
+	out += "</ul>";
+	out += "<input type='submit' value='remove account' /></form>";
+	out += "<h2>Create a new account</h2>";
+	out += "<form method='GET' action='/newSweetSoftAccount'>" +
+		"<label for='accountName'>account name e.g. supermum1</label>" +
+		"<input type='text' size='40' id='accountName' name='accountName' /><br />" +
+		"<label for='name'>SuperMum name</label>" +
+		"<input type='text' size='40' id='name' name='name' /><br />" +
+		"<label for='phone'>SuperMum phone number</label>" +
+		"<input type='text' size='40' id='phone' name='phone' /><br />" +
+		"<input type='submit' /></form>";
+	return out;
+});
+
 SweetSoft = {};
 (function() {
 	
@@ -48,14 +158,19 @@ SweetSoft = {};
 		"Your contact details: <%=student_phone%>, <%=student_email%>. \n\n" +
 		"See you soon! \n\nSweetSpot",
 		slotLengthMinutes: 30,
-		viewingsCalendarName: "viewings"
+		viewingsCalendarName: "viewings",
+		freetimeCalendarName: "freetime"
 	};
-	try {
-		SweetSoft.config = getConfig();
-	} catch(e) {
-		throw new Error('Error: SweetSoft initiation: '+e.message);
-	}
-
+	
+	SweetSoft.resourceName = "SweetSoftAccount";
+	
+	SweetSoft.init = function(force) {
+		try {
+			SweetSoft.config = getConfig();
+		} catch(e) {
+			throw new Error('Error: SweetSoft.init: '+e.message);
+		}
+	};
 	SweetSoft.createAppointment = function(data) {
 		try {
 			verifyOptions(data, [
@@ -73,6 +188,9 @@ SweetSoft = {};
 		}
 		var config = SweetSoft.config;
 		var account = config.accounts[data.superMumID];
+		if(!account) {
+			throw new Error("Error: SweetSoft.createAppointment: problem getting account "+data.superMumID);
+		}
 		var attendeeList = data.attendees,
 			attendees = [{
 				name: data.student_name,
@@ -90,6 +208,8 @@ SweetSoft = {};
 		data.supermum_phone = account.phone;
 		var startTime = new Date.parse(data.date+' '+data.start_time);
 		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
+		startTime = startTime.toISOString();
+		endTime = endTime.toISOString();
 		var options = {
 			title: string_template(config.eventTitleTemplate, data),
 			description: string_template(config.eventDescriptionTemplate, data),
@@ -99,11 +219,10 @@ SweetSoft = {};
 			organiser_name: account.name,
 			organiser_email: account.email,
 			attendees: attendees,
-			accountID: account.email,
-			calendarName: config.viewingsCalendarName
+			accountName: data.superMumID,
+			calendarID: config.viewingsCalendarName
 		};
-
-		GCal.newEvent(options);
+		return GCal.newEvent(options);
 	};
 	
 	SweetSoft.listFreeSlots = function(options) {
@@ -115,64 +234,182 @@ SweetSoft = {};
 			throw new Error("Error: SweetSoft.listFreeSlots: "+e.message);
 		}
 
-		var today = new Date.today(); // 00:00 today
-		var tomorrow = today.add(2).day(); // to get to 24:00
-		var config = SweetSpot.config;
-		//var calendars = // TO-DO: get this information out of config - can do once config merges GCal and SweetSoft accounts properly
-		var superMumCalendars = config.accounts[superMumID].calendars;
-
-		var freeTime = GCal.getEventsByTime(superMumCalendars.freetime, today, tomorrow);
-		var bookedSlots = GCal.getEventsByTime(superMumCalendars.viewings, today, tomorrow);
-		/* pseudo:
-			set current freeTime slot to first freeTime slot
-			set next booked slot to first booked slot
-			
-			start at beginning of current freeTime slot
-			move to start of next booked slot - that defines start of next free slot
-			
-			calculate end of next free slot (check at least slotLengthMinutes)
-				check am before end of current freeTime slot
-					if not, move to start of next freeTime slot
-					if so, mark start of next freeTime slot
+		var today = new Date.today(), // 00:00 today
+			nextWeek = today.add(7).day(),
+			config = SweetSoft.config,
+			superMumID = options.accountID,
+			superMumCalendars = config.accounts[superMumID].calendars,
+			viewingsCalendarName = SweetSoft.config.viewingsCalendarName,
+			freetimeCalendarName = SweetSoft.config.freetimeCalendarName;
+		verifyOptions(superMumCalendars, [
+			viewingsCalendarName,
+			freetimeCalendarName
+		]);
+		var bookedSlots = GCal.getEventsByTime({
+			calendarName: viewingsCalendarName,
+			startMin: today,
+			startMax: nextWeek
+		});
+		var freetimeSlots = GCal.getEventsByTime({
+			calendarName: freetimeCalendarName,
+			startMin: today,
+			startMax: nextWeek
+		});
 		
+		/* pseudo:
+			loop while there are freetime slots:
+				move to start of next freetime slot
+				loop:
+					create a slot (check it fits; if not, break)
+					move to end of slot
 		*/
-		/* TO-DO: return object with all time slots that are not already booked up
-			something like: {
-				today: [slots],
-				tomorrow: [slots]
+		
+		var startTracker = new Date(),
+			freeSlotEndTracker,
+			endTracker,
+			dayTracker,
+			duration = SweetSoft.config.slotLengthMinutes,
+			slots = {},
+			slot,
+			duration,
+			nextViewingsSlot = {
+				viewings: bookedSlots,
+				index: 0,
+				startTime: "",
+				endTime: "",
+				movePast: function(time) {
+					var viewing,
+						viewingStart,
+						viewingEnd;
+					if(nextViewingsSlot.startTime && nextViewingsSlot.startTime.compareTo(time) > 0) {
+						return;
+					}
+					do {
+						viewing = nextViewingsSlot.viewings[nextViewingsSlot.index];
+						if(viewing) {
+							viewingStart = new Date();
+							viewingStart.setISO8601(viewing.startTime);
+							nextViewingsSlot.startTime = viewingStart;
+							viewingEnd = viewingStart.clone();
+							viewingEnd.setISO8601(viewing.endTime);
+							nextViewingsSlot.endTime = viewingEnd;
+							nextViewingsSlot.index++;
+						} else {
+							nextViewingsSlot.startTime = null;
+							nextViewingsSlot.endTime = null;
+							return;
+						}
+					} while(viewingStart.compareTo(time) < 0);
+				}
+			};
+		for(var i=0, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
+			freetimeSlot = freetimeSlots[i];
+			startTracker.setISO8601(freetimeSlot.startTime);
+			freeSlotEndTracker = startTracker.clone();
+			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
+			dayTracker = startTracker.clone().clearTime().toISOString();
+			nextViewingsSlot.movePast(startTracker);
+			while(1) {
+				endTracker = startTracker.clone().add(duration).minutes();
+				if(endTracker.compareTo(freeSlotEndTracker) > 0) {
+					break; // i.e. move onto next freetimeSlot
+				} else if(nextViewingsSlot.startTime && endTracker.compareTo(nextViewingsSlot.startTime) > 0) {
+					startTracker = nextViewingsSlot.endTime; // i.e. skip past the nextViewingsSlot
+					nextViewingsSlot.movePast(startTracker);
+				} else {
+					duration = (endTracker - startTracker) / (60 * 1000);
+					if(SweetSoft.config.slotLengthMinutes >= duration) {
+						if(!slots[dayTracker]) {
+							slots[dayTracker] = [];
+						}
+						slots[dayTracker].push({
+							startTime: startTracker.toISOString(),
+							endTime: endTracker.toISOString()
+						}); /* TO-DO: check that slot is long enough i.e. at least as big as slotLengthMinutes */
+					}
+					startTracker = endTracker;
+				}
 			}
-		*/
+		}
+		return slots;
+	};
+	
+	SweetSoft.storeNewAccount = function(accountName, account) {
+		account.id = accountName;
+		try {
+			verifyOptions(account, [
+				'id',
+				'name',
+				'email',
+				'phone'
+			]);
+		} catch(e) {
+			throw new Error('Error SweetSoft.storeNewAccount: '+e.message);
+		}
+		return system.datastore.write(SweetSoft.resourceName, account);
+	};
+	SweetSoft.removeAccount = function(accountName) {
+		if(!accountName) {
+			throw new Error("Error: SweetSoft.deleteAccount: no account name provided");
+		}
+		return system.datastore.remove(SweetSoft.resourceName, accountName);
+	};
+	SweetSoft.listAccounts = function() {
+		var accounts = system.datastore.search(SweetSoft.resourceName, {});
+		return accounts;
 	};
 	
 	function getConfig() {
 		var AdminInfo = new Resource('SweetSoftAdminInfo');
 		function getAdminOption(id) {
-			return AdminInfo.search(id).value; /* TO-DO: check this is correct use of search */
-		}
-		var Account = new Resource('SweetSoftAccount');
-		function getSweetSoftAccount(id) {
-			Account.search({
-				id: id
-			});
+			var option = AdminInfo.search(id)[0];
+			if(option) {
+				return option.value;
+			}
 		}
 		var gCalAccounts = GCal.listAccounts();
-		var accounts = {}, account;
-		for(var gCalAccount in gCalAccounts) {
-			account = getSweetSoftAccount()
-			accounts[gCalAccount.accountName] = account;
+		if(!gCalAccounts.length) {
+			throw new Error('no accounts returned by GCal.listAccounts');
 		}
+		var SweetSoftAccounts = SweetSoft.listAccounts();
+		if(!SweetSoftAccounts.length) {
+			throw new Error('no accounts returned by SweetSoft.listAccounts');
+		}
+		if(SweetSoftAccounts.length !== gCalAccounts.length) {
+			throw new Error('There are a different number of SweetSoft accounts ('+SweetSoftAccounts.length+') to gCal accounts ('+gCalAccounts.length+')');
+		}
+		for(var i=0, il=SweetSoftAccounts.length, tmpObj={}, tmpAccount; i<il; i++) {
+			tmpAccount = SweetSoftAccounts[i];
+			tmpObj[tmpAccount.id] = tmpAccount;
+		}
+		SweetSoftAccounts = tmpObj;
+		/* match SweetSoftAccounts to gCalAccounts and merge calendars property */
+		var SweetSoftAccount, accountNames = [], accountName;
+		for(var i=0, il=gCalAccounts.length, gCalAccount; i<il; i++) {
+			gCalAccount = gCalAccounts[i];
+			accountName = gCalAccount.id;
+			accountNames.push(accountName);
+			SweetSoftAccount = SweetSoftAccounts[accountName];
+			if(SweetSoftAccount) {
+				SweetSoftAccount.calendars = gCalAccount.calendars;
+			}
+		}
+		verifyOptions(SweetSoftAccounts, accountNames); // this checks that there are SweetSoft accounts for all GCalAccounts
 		var config = {
-			accounts: accounts,
+			accounts: SweetSoftAccounts,
 			eventTitleTemplate: getAdminOption('eventTitleTemplate') || DEFAULTS.eventTitleTemplate,
 			eventDescriptionTemplate: getAdminOption('eventDescriptionTemplate') || DEFAULTS.eventDescriptionTemplate,
 			slotLengthMinutes: getAdminOption('slotLengthMinutes') || DEFAULTS.slotLengthMinutes,
-			viewingsCalendarName: getAdminOption('viewingsCalendarName') || DEFAULTS.viewingsCalendarName
+			viewingsCalendarName: getAdminOption('viewingsCalendarName') || DEFAULTS.viewingsCalendarName,
+			freetimeCalendarName: getAdminOption('freetimeCalendarName') || DEFAULTS.freetimeCalendarName
 		};
 		verifyOptions(config, [
 			'accounts',
 			'eventTitleTemplate',
 			'eventDescriptionTemplate',
-			'slotLengthMinutes'
+			'slotLengthMinutes',
+			'viewingsCalendarName',
+			'freetimeCalendarName'
 		]);
 		return config;
 	}
@@ -194,7 +431,7 @@ SweetSoft = {};
 		}
 		if(missingOptions.length) {
 			e = new Error();
-			e.message = 'missing options - '+missingOptions.join(", ");
+			e.message = 'missing options - '+missingOptions.join(", ")+'; object: '+objToString(obj);
 			throw e;
 		}
 		return true;

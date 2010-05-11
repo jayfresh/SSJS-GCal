@@ -12,6 +12,7 @@ given a location for configuration, use that for: event description template, li
 system.use("com.joyent.Sammy");
 system.use("com.joyent.Resource");
 system.use("com.google.code.date"); // include datejs lib
+//system.use("date"); // the latest version of datejs, updated 2008-05-13
 system.use("GCal");
 system.use("SweetSoft");
 system.use("jsunity_0_6");
@@ -34,7 +35,7 @@ function objToString(obj) {
 
 var Log = {};
 
-GET('/', function() {
+GET('/tests', function() {
 	jsUnity.attachAssertions();
 	var out = "";
 	jsUnity.log = function (s) {
@@ -42,10 +43,15 @@ GET('/', function() {
 	};
 	jsUnity.run(
 		//GCal.tests.newEvent,
-		//GCal.tests.getEventsByTime
-		//SweetSoft.tests.createAppointment
+		//GCal.tests.getEventsByTime,
+		SweetSoft.tests.createAppointment,
+		SweetSoft.tests.init,
 		SweetSoft.tests.listFreeSlots
 	);
 	out += "<p>"+objToString(Log)+"</p>";
 	return out;
+});
+
+GET('/', function() {
+	return redirect('/listSweetSoftAccounts');
 });
