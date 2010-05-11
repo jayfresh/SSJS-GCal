@@ -19,16 +19,10 @@ system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
 system.use("tests.SweetSoft_tests");
 
-// fix the timezone up to BST-locale
-var old_today = Date.today;
-Date.today = function() {
-	var d = new old_today();
-	d.setTimezoneOffset("-0100");
-	return d;
-};
-
 GET('/time', function() {
 	var d = new Date.today();
+	d.setISO8601('2010-05-11T01:00:00.000Z');
+	return d.toString();
 	return d.toLocaleString() + " " + d.getTimezoneOffset();
 	return objToString(Date.CultureInfo.abbreviatedTimeZoneDST);
 	return Date.getTimezoneOffset.toString();

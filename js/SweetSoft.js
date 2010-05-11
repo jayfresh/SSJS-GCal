@@ -102,7 +102,7 @@ GET('/booking', function() {
 		d.setISO8601(day);
 		for(var i=0, il=slots.length, slot, dd; i<il; i++) {
 			slot = slots[i];
-			dd = new Date();
+			dd = new Date.today();
 			dd.setISO8601(slot.startTime);
 			slot.timeLabel = dd.toString('HH:mm');
 		}
@@ -265,7 +265,7 @@ SweetSoft = {};
 		// enhance data object before templating
 		data.supermum_name = account.name;
 		data.supermum_phone = account.phone;
-		var startTime = new Date();
+		var startTime = new Date.today();
 		startTime.setISO8601(data.start_time);
 		var format = "d/M/yyyy";
 		data.date = startTime.toString(format);
@@ -352,7 +352,7 @@ SweetSoft = {};
 					do {
 						viewing = nextViewingsSlot.viewings[nextViewingsSlot.index];
 						if(viewing) {
-							viewingStart = new Date();
+							viewingStart = new Date.today();
 							viewingStart.setISO8601(viewing.startTime);
 							nextViewingsSlot.startTime = viewingStart;
 							viewingEnd = viewingStart.clone();

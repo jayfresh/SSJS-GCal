@@ -391,7 +391,8 @@ var GCal = {};
 			offset *= ((d[15] == '-') ? 1 : -1);
 		}
 		
-		offset -= date.getTimezoneOffset();
+		//offset -= date.getTimezoneOffset();
+		offset -= -60; // JRL: hard-coding BST - make sure to change this on October 31st 2010!
 		time = (Number(date) + (offset * 60 * 1000));
 		this.setTime(Number(time));
 	}
