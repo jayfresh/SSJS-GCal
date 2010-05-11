@@ -57,9 +57,10 @@ POST('/createAppointment', function() {
 
 GET('/booking', function() {
 	var query = this.request.query;
-	var accountID = query.accountID;
-	if(!accountID) {
-		return "<p>Please add the ID of an account</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' size='40' /><input type='submit' /></form>";
+	var accountID = query.accountID,
+		property = query.property;
+	if(!accountID || !property) {
+		return "<p>Please add these fields</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' id='accountID' size='40' /><label for='property'>Account ID:</label><input type='text' name='property' id='property' size='40' /><input type='submit' /></form>";
 	}
 	SweetSoft.init();
 	var dayList = SweetSoft.listFreeSlots({
@@ -100,6 +101,8 @@ GET('/booking', function() {
 			slots: slots
 		});
 	}
+	this.accountID = accountID;
+	this.property = property;
 	this.earliestSlot = earliestSlot;
 	this.days = days;
 	return template('/booking.html');
