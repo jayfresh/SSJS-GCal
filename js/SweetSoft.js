@@ -35,6 +35,8 @@ TO-DO: protect the admin system with a password
 
 TO-DO: get the JavaScript working appropriately on the bookings page
 
+TO-DO: the times are an hour out when looking through smart platform
+
 */
 
 POST('/createAppointment', function() {
@@ -64,7 +66,7 @@ GET('/booking', function() {
 	var accountID = query.accountID,
 		property = query.property;
 	if(!accountID || !property) {
-		return "<p>Please add these fields</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' id='accountID' size='40' /><label for='property'>Account ID:</label><input type='text' name='property' id='property' size='40' /><input type='submit' /></form>";
+		return "<p>Please add these fields</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' id='accountID' size='40' /><label for='property'>Property address:</label><input type='text' name='property' id='property' size='40' /><input type='submit' /></form>";
 	}
 	SweetSoft.init();
 	var dayList = SweetSoft.listFreeSlots({
