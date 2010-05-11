@@ -37,6 +37,10 @@ TO-DO: get the JavaScript working appropriately on the bookings page
 
 TO-DO: the times are an hour out when looking through smart platform
 
+TO-DO: get the images pre-loading on the booking page
+
+TO-DO: get the CAPTCHA working
+
 */
 
 POST('/createAppointment', function() {
