@@ -57,7 +57,7 @@ POST('/createAppointment', function() {
 
 GET('/booking', function() {
 	var query = this.query,
-		accountID: query.accountID;
+		accountID = query.accountID;
 	if(!accountID) {
 		throw new Error("Error: no accountID supplied");
 	}
