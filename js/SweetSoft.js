@@ -29,8 +29,6 @@ During config setup, SweetSoft gets the accounts from Gcal and merges the 'calen
 	}
 }
 
-TO-DO: write the algorithm that calculates free slots
-
 TO-DO: write the mechanism for saving the admin info
 
 */
@@ -58,9 +56,14 @@ POST('/createAppointment', function() {
 });
 
 GET('/booking', function() {
+	var query = this.query,
+		accountID: query.accountID;
+	if(!accountID) {
+		throw new Error("Error: no accountID supplied");
+	}
 	SweetSoft.init();
 	var dayList = SweetSoft.listFreeSlots({
-		accountID: 'supermum1' /* TO-DO: get this from this.query */
+		accountID: accountID
 	});
 	var days = [],
 		earliestSlot,
