@@ -66,7 +66,6 @@ GET('/deleteGCalAccount', function() {
 	return redirect(url);
 });
 
-/* this is an example use, not fundamental to API */
 GET('/listGCalAccounts', function() {
 	var accounts = GCal.listAccounts();
 	var out = "";
@@ -190,6 +189,11 @@ var GCal = {};
 		}
 		setCurrentSessionToken(options);
 		var calendarID = options.calendarID;
+		var account = GCal.getAccount(options.accountName);
+		var calendar = account.calendars[calendarID];
+		if(!calendar) {
+			throw new Error("Error: GCal.newEvent: account "+accountName+" does not contain calendar "+calendarID);
+		}
 		var startMin = options.startMin,
 			startMax = options.startMax;
 		/* JRL: if startMin/Max are not already Date objects, they are assumed to be ISO strings e.g. 2010-05-04T12:00:00.000Z */
@@ -205,7 +209,7 @@ var GCal = {};
 		}
 		var response = makeCalRequest({
 			type: 'events',
-			calendarID: calendarID,
+			calendarID: calendar,
 			startMin: startMin,
 			startMax: startMax
 		});
@@ -328,6 +332,7 @@ var GCal = {};
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
 			query = "start-min="+startMin+"&"+"start-max="+startMax;
+			query += "&orderby=starttime&sortorder=ascending";
 		}
 		
 		if(query) {
@@ -346,11 +351,11 @@ var GCal = {};
 		}
 		var response = system.http.request(method, url, headers, data);
 		checkResponse(response);
-		/* is this even necessary? I don't know if system.http.request follows 302's, but I think it does */
 		if(response.code === '302') {
 			location = response.headers.location;
 			/* TO-DO: handle the gsessionid, save for future use, as this apparently improves performance; although the "S" cookie has a similar effect and is also important */
-			var gsessionid = location.substring(location.indexOf('?')+1).split('=')[1];
+			//var gsessionid = location.substring(location.indexOf('?')+1).split('=')[1];
+			/* TO-DO: that gsessionid setting is not correct, as it should take into account when parameters already exist */
 			response = system.http.request(method, location, headers, data);
 			checkResponse(response);
 		}

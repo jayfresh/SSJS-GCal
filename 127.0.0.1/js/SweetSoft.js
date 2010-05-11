@@ -40,8 +40,6 @@ POST('/createAppointment', function() {
 		options = {
 			superMumID: query.superMumID,
 			property: query.property,
-			date_time: query.date_time,
-			date: query.date,
 			start_time: query.start_time,
 			student_name: query.student_name,
 			student_email: query.student_email,
@@ -53,25 +51,71 @@ POST('/createAppointment', function() {
 	if(options.attendees) {
 		options.attendees = options.attendees.split(","); /* TO-DO: remove any spaces at front or end of array elements */
 	}
-	if(options.date_time) {
-		var dateArr = options.date_time.split(" ");
-		options.date = dateArr[0];
-		options.start_time = dateArr[1];
-	}
 	SweetSoft.init();
 	var response = SweetSoft.createAppointment(options);
-	var queryString = "";
-	for(var i in options) {
-		queryString += "&"+i+"="+options[i];
+	this.options = options;
+	return template('/thanks.html');
+});
+
+GET('/booking', function() {
+	SweetSoft.init();
+	var dayList = SweetSoft.listFreeSlots({
+		accountID: 'supermum1' /* TO-DO: get this from this.query */
+	});
+	var days = [],
+		earliestSlot,
+		slots,
+		d,
+		count=0;
+	for(var day in dayList) {
+		d = new Date.today();
+		slots = dayList[day];
+		
+		if(count===0) {
+			var earliest = slots[0],
+				earliestStart = d.clone();
+			earliestStart.setISO8601(earliest.startTime);
+			var dayDiff = Math.floor((earliestStart - d) / (24 * 60 * 60 * 1000));
+			var dayLabel = dayDiff === 0 ? "Today" : (dayDiff === 1 ? "Tomorrow" : earliestStart.getDayName());
+			count++;
+			earliestSlot = {
+				timeLabel: earliestStart.toString("HH:mm"),
+				dayLabel: dayLabel
+			};
+			earliest.earliest = true;
+		}
+		
+		d.setISO8601(day);
+		for(var i=0, il=slots.length, slot, dd; i<il; i++) {
+			slot = slots[i];
+			dd = new Date();
+			dd.setISO8601(slot.startTime);
+			slot.timeLabel = dd.toString('HH:mm');
+		}
+		days.push({
+			label: d.getDayName()[0],
+			slots: slots
+		});
 	}
-	queryString = queryString.substring(1);
-	return redirect('/property-thanks.html?'+queryString);
+	this.earliestSlot = earliestSlot;
+	this.days = days;
+	return template('/booking.html');
 });
 
 GET('/listFreeSlots', function() {
-	var today = new Date.now();
-	SweetSoft.listFreeSlots(today);
-	/* TO-DO: make this output something */
+	SweetSoft.init();
+	var days = SweetSoft.listFreeSlots({
+		accountID: 'supermum1'
+	});
+	var dayList = {};
+	for(var day in days) {
+		var slotList = days[day];
+		for(var i=0, il=slotList.length, slots=[]; i<il; i++) {
+			slots.push(objToString(slotList[i]));
+			dayList[day] = slots.join(", ");
+		}
+	}
+	return objToString(dayList);
 });
 
 GET('/newSweetSoftAccount', function() {
@@ -176,12 +220,10 @@ SweetSoft = {};
 			verifyOptions(data, [
 				'superMumID',
 				'property',
-				'date',
 				'start_time',
 				'student_name',
 				'student_email',
-				'student_phone',
-				'attendees'
+				'student_phone'
 			]);
 		} catch(e) {
 			throw new Error("Error: SweetSoft.createAppointment: "+e.message);
@@ -206,7 +248,11 @@ SweetSoft = {};
 		// enhance data object before templating
 		data.supermum_name = account.name;
 		data.supermum_phone = account.phone;
-		var startTime = new Date.parse(data.date+' '+data.start_time);
+		var startTime = new Date();
+		startTime.setISO8601(data.start_time);
+		var format = "d/M/yyyy";
+		data.date = startTime.toString(format);
+		data.start_time = startTime.toString('HH:mm');
 		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
 		startTime = startTime.toISOString();
 		endTime = endTime.toISOString();
@@ -235,7 +281,7 @@ SweetSoft = {};
 		}
 
 		var today = new Date.today(), // 00:00 today
-			nextWeek = today.add(7).day(),
+			nextWeek = today.clone().add(7).day(),
 			config = SweetSoft.config,
 			superMumID = options.accountID,
 			superMumCalendars = config.accounts[superMumID].calendars,
@@ -246,12 +292,14 @@ SweetSoft = {};
 			freetimeCalendarName
 		]);
 		var bookedSlots = GCal.getEventsByTime({
-			calendarName: viewingsCalendarName,
+			accountName: superMumID,
+			calendarID: viewingsCalendarName,
 			startMin: today,
 			startMax: nextWeek
 		});
 		var freetimeSlots = GCal.getEventsByTime({
-			calendarName: freetimeCalendarName,
+			accountName: superMumID,
+			calendarID: freetimeCalendarName,
 			startMin: today,
 			startMax: nextWeek
 		});
@@ -325,7 +373,7 @@ SweetSoft = {};
 						slots[dayTracker].push({
 							startTime: startTracker.toISOString(),
 							endTime: endTracker.toISOString()
-						}); /* TO-DO: check that slot is long enough i.e. at least as big as slotLengthMinutes */
+						});
 					}
 					startTracker = endTracker;
 				}

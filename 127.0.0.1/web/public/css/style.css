@@ -1,0 +1,247 @@
+
+/*--------------------------Global */
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, Sans-serif;
+	letter-spacing: 0.02em;
+	line-height: 1.4em;
+	color: #858585;
+	font-size: 82.5%;
+}
+
+.rounded {
+	-moz-border-radius: 5px; /* FF1+ */
+	-webkit-border-radius: 5px; /* Saf3+, Chrome */
+	border-radius: 5px; /* Opera 10.5, IE 9 */	
+}
+
+
+.margintop {
+	margin-top: 20px;
+}
+
+.margintopsmall {
+	margin-top: 10px;
+}
+
+.padtop {
+	padding-top: 6px
+}
+.clearboth {
+	clear: both;
+}
+
+.clickable {
+	cursor: pointer;
+	outline: none;
+}
+
+/*--------------------------Typography */
+
+address, h2 {
+	font-weight: bold;
+	font-size: 1.6em;
+	color: #cdcdcd;
+}
+
+.alignright {
+	text-align: right;
+}
+.orange {
+	color: #fbb75f;
+}
+
+span#seeAll {
+	font-weight: bold;
+	font-size: 1.4em;
+	padding: 10px 20px 10px 10px;
+	display: block;
+	background-image: url(../images/booking/arrow_right.gif);
+	background-repeat: no-repeat;
+	background-position: right center;
+	margin-right: 50px;
+}
+
+span#seeAll:hover {
+	color: #fbb75f;
+}
+#week span {
+	color: white;
+	background-color: #fca961;
+	display: block;
+	font-size: 1.2em;
+	padding: 6px 0px;
+	background-image: url(../images/booking/day_bg.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	margin-right: 0px;
+}
+
+#week ul {
+	font-size: 0.9em;
+}
+
+#week ul li {
+	margin: 5px 0 0 0;
+	cursor: pointer;
+}
+
+#week ul li:hover {
+	background-color: #fca961;
+	color: white;
+}
+
+label {
+	font-weight: bold;
+}
+
+.smalltext {
+	font-size: 0.79em;
+	line-height: 1.5em;
+}
+
+.requiredfield, label.error {
+	font-size: 0.79em;
+	font-weight: bold;
+	font-style: italic;
+	height: 15px;
+	width: 150px;
+	text-align: right;
+	float: right;
+	color: #fbb75f;
+}
+
+.spacer {
+	float: right;
+	display: inline;
+	height: 15px;
+	width: 12px;
+}
+
+#bookingSystem p {
+	margin-top: 20px;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+/*--------------------------Divs */
+
+#wrap {
+	width: 780px;
+	margin: auto;
+	margin-top: 60px;
+}
+
+
+#allSlots {
+	background-color: #f7f7f7;
+}
+
+#week {
+	padding: 10px 0px 10px 12px;
+	width: 450px;
+	clear: both;
+	position: relative;
+}
+
+.day {
+	width: 54px;
+	margin-right: 10px;
+	text-align: center;
+}
+
+/*--------------------------Forms */
+
+input {
+	width: 200px;
+	border: none white;
+	height: 30px;
+	padding: 0 10px;
+	background-image: url(../images/booking/form.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+input:hover, input:focus {
+	background-image: url(../images/booking/form_alert.png)
+}
+
+textarea#invite {
+	background-image: url(../images/booking/invite.png);
+	height: 80px;
+	width: 200px;
+	padding: 10px;
+	border: none;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+textarea#invite:hover, textarea#invite:focus {
+	background-image: url(../images/booking/invite_alert.png);
+}
+
+#week input {
+	height: auto;
+	width: auto;
+}
+
+/*--------------------------Buttons */
+
+
+
+#bookSlot {
+	color: white;
+	background-color: #fd9463;
+	border: none;
+	font-size: 1.8em;
+	font-weight: bold;
+	font-family: "Helvetica Neue", Helvetica, Arial, Sans-serif;
+	letter-spacing: 0.02em;	
+	background-image: url(../images/booking/book_button.png);
+	background-position: top center;
+	width: 460px;
+	height: 50px;
+	outline: none;
+	cursor: pointer;
+	
+}
+
+#bookSlot:hover {
+	background-position: 0px -50px;
+}
+input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earlierSlot::-moz-focus-inner, #laterSlot::-moz-focus-inner {
+	outline: none;
+	border: none;
+}
+
+#earlierSlot, #laterSlot {
+	border: none;
+	font-size: 0.9em;
+	font-weight: bold;
+	font-family: "Helvetica Neue", Helvetica, Arial, Sans-serif;
+	letter-spacing: 0.02em;
+	width: 100px;
+	height: 20px;
+	color: #858585;
+	text-align: left;
+	cursor: pointer;
+}
+
+#earlierSlot {
+	background-image: url(../images/booking/left.png);
+	padding-left: 16px;
+}
+#laterSlot {
+		background-image: url(../images/booking/right.png);
+		padding-left: 9px;
+		margin-left: 10px
+}
+
+#earlierSlot:hover {
+	background-position:  0px 20px;
+}
+#laterSlot:hover {
+	background-position: 0px 20px;
+}

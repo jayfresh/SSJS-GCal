@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>SweetSpot Booking System</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/reset.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="/css/grid.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="/css/style.css" media="screen" /> 
+	
+	<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script> 
+	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script> 
+	<script type="text/javascript" src="/js/slider.js"></script>
+	
+</head>
+
+<body>
+	<div id="wrap">
+		<div id="bookingSystem">
+			<div class="grid6col left">
+				<h2>Hi [% options.student_name %], Thanks for booking a viewing!</h2>
+				<p class="grid4col">You have been emailed the details of your viewing, and one of our team will be in touch to confirm.</p>
+				<p class="grid4col">If you need to cancel or rearrange your viewing, please call us on [% options.supermum_phone %].</p>
+				[% IF options.attendees %]
+				<p class="grid4col">You have sent email invitations to the following addresses: [% options.attendees %]</p>
+				[% END %]
+			</div>
+			<div class="grid3col left marginleft">
+				<h2>Your Booking:</h2>
+				<p class="grid1col orange left bold">Address:</p><p class="grid2col right">[% options.property %]</p>
+				<br class="clearboth" />
+				<p class="grid1col orange left bold">Time:</p><p class="grid2col right">[% options.start_time %]</p>
+				<br class="clearboth" />
+				<p class="grid1col orange left bold">Date:</p><p class="grid2col right">[% options.date %]</p>
+			</div>
+		</div>		
+		
+	</div>
+
+
+
+</body>
+</html>

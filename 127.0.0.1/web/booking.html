@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>SweetSpot Booking System</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<link rel="stylesheet" type="text/css" href="/css/reset.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="/css/grid.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="/css/style.css" media="screen" /> 
+	
+	<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script> 
+	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script> 
+	<script type="text/javascript" src="/js/slider.js"></script> 
+	<script type="text/javascript" src="/js/jquery.validate.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+   			$("#bookingSystem").validate();
+		});
+	</script>
+</head>
+
+<body>
+	<div id="wrap">
+		<form id="bookingSystem" method="POST" action="/createAppointment">
+			<div class="grid4col left">
+				<div class="grid4col left">
+					<div class="grid3col right">
+						<h2>Your Details:</h2>
+					</div>
+				</div>
+				<div class="grid1col padtop margintop left alignright">
+					<label for="name">Name:</label>
+				</div>
+				<div class="grid3col left margintop marginleft">
+					<input type="text" name="student_name" id="name" class="required" />
+					<span class="spacer"></span>
+				</div>
+				<br class="clearboth" />
+				<div class="grid1col padtop left alignright margintopsmall">
+					<label for="email">Email:</label>
+				</div>
+				<div class="grid3col left marginleft margintopsmall">
+					<input type="text" name="student_email" id="email" class="required" />
+					<span class="spacer"></span>
+				</div>
+				<br class="clearboth" />
+				<div class="grid1col left padtop alignright margintopsmall">
+					<label for="phone">Phone:</label>
+				</div>
+				<div class="grid3col left marginleft margintopsmall">
+					<input type="text" name="student_phone" id="phone" class="required" />
+					<span class="spacer"></span>
+				</div>
+				<br class="clearboth" />
+				<div class="grid1col left padtop alignright margintopsmall">
+					<label for="invite">Invite:</label>
+				</div>
+				<div class="grid3col left marginleft margintopsmall">
+					<textarea rows="4" name="attendees" id="invite"></textarea>
+				</div>
+				<div class="alignright grid3col right margintopsmall">
+					<span class="smalltext">(enter the emails of people you would like to invite to the viewing, separated by commas)</span>
+				</div>
+				<div class="grid4col left  margintop">
+					<label>Verify that you are a human:</label>
+					<img class="margintopsmall" width="300px" src="images/recapcha.jpg" />
+				</div>
+			</div>
+			<div class="grid6col left marginleft">
+				<address>9 Kenilworth Avenue</address>
+				<input type="hidden" name="superMumID" value="supermum1" />
+				<input type="hidden" name="property" value="9 Kenilworth Avenue" />
+				
+				<input type="submit" id="bookSlot" class="margintop" value="Book for: [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %]" />
+				<div class="margintop">
+					<span id="nextSlot" class="orange margintop">This is the next available slot.</span>
+					<div class="alignright right">
+						<!-- <button id="earlierSlot">Earlier Slot</button> -->
+						<button id="laterSlot">Later Slot</button>
+					</div>
+				</div>
+				<div id="allSlots" class="grid6col rounded right margintop">
+					<span id="seeAll">Click To See All Slots This Week</span>
+					<div id="week">
+						[% FOREACH day = days %]
+						<div class="day left">
+							<span>[% day.label %]</span>
+							<ul>
+								[% FOREACH slot = day.slots %]
+								<li>
+									[% IF slot.earliest %]
+										<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" checked="checked" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
+									[% ELSE %]
+										<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
+									[% END %]
+								[% END %]
+							</ul>
+						</div>
+						[% END %]
+						<br class="clearboth"/>					
+					</div>
+				</div>
+			</div>
+					
+		</form>
+	
+	
+	</div>
+
+
+
+</body>
+</html>
