@@ -21,12 +21,12 @@ system.use("jsunity_0_6");
 system.use("tests.SweetSoft_tests");
 
 /* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT */
-Date.prototype.old_setISO8601 = Date.prototype.setISO8601;
-Date.prototype.setISO8601 = function() {
-	this.old_setISO8601.apply(this,arguments);
+Date.prototype.old_toString = Date.prototype.toString;
+Date.prototype.toString = function() {
 	if(this.getTimezoneOffset()===0) {
-		//this.setTimezoneOffset('-0100');
+		this.setTimezoneOffset('-0100');
 	}
+	return this.old_toString.apply(this,arguments);
 };
 
 GET('/headers', function() {
@@ -42,6 +42,7 @@ GET('/time', function() {
 	out += "d.setISO8601('2010-05-11T09:00:00.000Z'); d.toString();<br />"+d.toString()+"<br />";
 	out += "d.toISOString();<br />"+d.toISOString()+"<br />";
 	out += "d.toString('HH:mm');<br />"+d.toString("HH:mm")+"<br />";
+	out += "d.toString.toString();<br />"+d.toString.toString()+"<br />";
 	return out;
 });
 
