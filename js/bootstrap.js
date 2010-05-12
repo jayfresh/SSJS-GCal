@@ -26,7 +26,7 @@ GET('/headers', function() {
 
 GET('/time', function() {
 	var d = new Date.today();
-	if(d.getTimezoneOffset==='0') {
+	if(d.getTimezoneOffset===0) {
 		d.setTimezoneOffset('-0100');
 	}
 	var out = "new Date.today().toString();<br />"+d.toString()+"<br />";
