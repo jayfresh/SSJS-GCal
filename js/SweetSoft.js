@@ -75,7 +75,7 @@ POST('/createAppointment', function() {
 	var captcha_status = response_lines[0];
 	var captcha_error = response_lines[1];
 	if(captcha_status === "false" && captcha_error) {
-		return redirect('/booking?superMumID='+options.superMumID+'&property='+options.property+'&error='+captcha_error);
+		return redirect('/booking?accountID='+options.superMumID+'&property='+options.property+'&error='+captcha_error);
 	}
 	
 	SweetSoft.init();
