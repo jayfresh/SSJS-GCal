@@ -347,33 +347,23 @@ SweetSoft = {};
 					create a slot (check it fits; if not, break)
 					move to end of slot
 		*/
-		var movePast = function(time, slotArray) {
+		var findStartTime = function(slotArray, time) {
 			var slot,
 				slotStart,
 				slotEnd;
-			if(!slotArray.index) {
-				slotArray.index = 0;
-			}
-			if(slotArray.startTime && slotArray.startTime.compareTo(time) > 0) {
-				return;
-			}
-			do {
-				slot = slotArray[slotArray.index];
-				throw new Error(slotArray.length+", "+slotArray.index);
-				if(slot) {
-					slotStart = new Date.today();
-					slotStart.setISO8601(slot.startTime);
-					slotArray.startTime = slotStart;
-					slotEnd = slotStart.clone();
-					slotEnd.setISO8601(slot.endTime);
-					slotArray.endTime = slotEnd;
-					slotArray.index++;
-				} else {
-					slotArray.startTime = null;
-					slotArray.endTime = null;
+			for(var i=0, il=slotArray.length; i<il; i++) {
+				slot = slotArray[i];
+				slotStart = new Date.today();
+				slotStart.setISO8601(slot.startTime);
+				slotEnd = new Date.today();
+				slotEnd.setISO8601(slot.endTime);
+				if(slotStart.compareTo(time) >= 0) {
+					return i;
+				} else if(slotEnd.compareTo(time) < 0) {
+					continue;
 				}
-			} while(slotStart.compareTo(time) < 0);
-		};
+			}
+		}
 		var startTracker = new Date.now(),
 			freeSlotEndTracker,
 			endTracker,
@@ -412,7 +402,11 @@ SweetSoft = {};
 					} while(viewingStart.compareTo(time) < 0);
 				}
 			};
-		for(var i=0, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
+		var i = findStartTime(freetimeSlots, startTracker);
+		if(typeof i === "undefined") {
+			throw new Error("Error: SweetSoft.listFreeSlots: can't find any freetime slots in the future");
+		}
+		for(var il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
 			startTracker.setISO8601(freetimeSlot.startTime);
 			freeSlotEndTracker = startTracker.clone();
@@ -425,7 +419,7 @@ SweetSoft = {};
 					break; // i.e. move onto next freetimeSlot
 				} else if(nextViewingsSlot.startTime && endTracker.compareTo(nextViewingsSlot.startTime) > 0) {
 					startTracker = nextViewingsSlot.endTime; // i.e. skip past the nextViewingsSlot
-					movePast(startTracker,nextViewingsSlot.viewings);
+					nextViewingsSlot.movePast(startTracker);
 				} else {
 					duration = (endTracker - startTracker) / (60 * 1000);
 					if(SweetSoft.config.slotLengthMinutes >= duration) {
