@@ -359,6 +359,7 @@ SweetSoft = {};
 			}
 			do {
 				slot = slotArray[slotArray.index];
+				throw new Error(slotArray.length+", "+slotArray.index);
 				if(slot) {
 					slotStart = new Date.today();
 					slotStart.setISO8601(slot.startTime);
