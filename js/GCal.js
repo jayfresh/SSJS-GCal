@@ -350,7 +350,6 @@ var GCal = {};
 			}
 		}
 		var response = system.http.request(method, url, headers, data);
-		throw new Error(response.content);
 		checkResponse(response);
 		if(response.code === '302') {
 			location = response.headers.location;
