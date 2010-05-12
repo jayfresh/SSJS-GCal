@@ -29,9 +29,9 @@ $(document).ready(function() {
 		var timeLabel = this.id.substring(1);
 		var dayLabel = "";
 		if(i===0) {
-			dayLabel = "Today";
+			dayLabel = earliestSlot.dayLabel==="Today" ? "Today" : "Tomorrow";
 		} else if(i===1) {
-			dayLabel = "Tomorrow";
+			dayLabel = earliestSlot.dayLabel==="Today" ? "Tomorrow" : start_time.substring(8,10)+"/"+start_time.substring(5,7);
 		} else {
 			dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
 		}
