@@ -25,7 +25,7 @@ Date.prototype.old_setISO8601 = Date.prototype.setISO8601;
 Date.prototype.setISO8601 = function() {
 	this.old_setISO8601.apply(this,arguments);
 	if(this.getTimezoneOffset()===0) {
-		this.setTimezoneOffset('-0100');
+		//this.setTimezoneOffset('-0100');
 	}
 };
 
