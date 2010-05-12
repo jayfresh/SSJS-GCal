@@ -417,7 +417,7 @@ SweetSoft = {};
 		}
 		for(var i=start.index, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
-			//startTracker.setISO8601(freetimeSlot.startTime);
+			//startTracker.setISO8601(freetimeSlot.startTime); - JRL: a relic from starting at the beginning of this freetimeSlot - remove when the method of starting at 'now' or the beginning of the next freetimeSlot has been tested (it's lacking testing in the middle of a freetimeSlot)
 			startTracker = start.time;
 			freeSlotEndTracker = startTracker.clone();
 			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
