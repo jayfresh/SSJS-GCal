@@ -18,7 +18,7 @@ system.use("SweetSoft");
 system.use("recaptcha");
 system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
-system.use("tests.SweetSoft_tests");
+//system.use("tests.SweetSoft_tests");
 
 /* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT */
 /*Date.prototype.old_toString = Date.prototype.toString;
@@ -28,6 +28,7 @@ Date.prototype.toString = function() {
 	}
 	return str = this.old_toString.apply(this,arguments);
 };*/
+/* this time fix ONLY works for this case where we are 1 hour out */
 Date.prototype.old_getHours = Date.prototype.getHours;
 Date.prototype.getHours = function() {
 	var offset = 0;

@@ -40,6 +40,10 @@ a {
 	color: #fca961;
 }
 
+.onlyjs {
+	visibility: hidden;
+}
+
 /*--------------------------Typography */
 
 address, h2 {

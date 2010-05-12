@@ -20,9 +20,7 @@ GCal stores accounts as a "GCalAccount" Resource. Each account has this structur
 	}
 }
 
-TO-DO: provide mechanism to list saved ID's and session tokens
-
-TO-DO: write tests for account creation and listing
+TO-DO: write tests for account creation
 
 */
 

@@ -29,17 +29,15 @@ During config setup, SweetSoft gets the accounts from Gcal and merges the 'calen
 	}
 }
 
+TO-DO: write tests for account creation
+
 TO-DO: write the mechanism for saving the admin info
 
 TO-DO: protect the admin system with a password
 
 TO-DO: get the JavaScript working appropriately on the bookings page
 
-TO-DO: the times are an hour out when looking through smart platform!
-
 TO-DO: get the images pre-loading on the booking page
-
-TO-DO: get the CAPTCHA working
 
 */
 
@@ -75,7 +73,7 @@ POST('/createAppointment', function() {
 	var captcha_status = response_lines[0];
 	var captcha_error = response_lines[1];
 	if(captcha_status === "false" && captcha_error) {
-		return redirect('/booking?accountID='+options.superMumID+'&property='+options.property+'&error='+captcha_error);
+		return redirect('/booking?accountID='+options.superMumID+'&property='+options.property+'&error='+encodeURIComponent(captcha_error));
 	}
 	
 	SweetSoft.init();
