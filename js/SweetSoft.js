@@ -386,8 +386,8 @@ SweetSoft = {};
 				viewings: bookedSlots,
 				index: 0,
 				startTime: "",
-				endTime: ""
-				/*movePast: function(time) {
+				endTime: "",
+				movePast: function(time) {
 					var viewing,
 						viewingStart,
 						viewingEnd;
@@ -410,7 +410,7 @@ SweetSoft = {};
 							return;
 						}
 					} while(viewingStart.compareTo(time) < 0);
-				}*/
+				}
 			};
 		for(var i=0, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
@@ -418,8 +418,7 @@ SweetSoft = {};
 			freeSlotEndTracker = startTracker.clone();
 			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
 			dayTracker = startTracker.clone().clearTime().toISOString();
-			//nextViewingsSlot.movePast(startTracker);
-			movePast(startTracker,nextViewingsSlot.viewings);
+			nextViewingsSlot.movePast(startTracker);
 			while(1) {
 				endTracker = startTracker.clone().add(duration).minutes();
 				if(endTracker.compareTo(freeSlotEndTracker) > 0) {
