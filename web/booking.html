@@ -82,11 +82,16 @@
 					<div class="grid2col left margintopsmall marginleft">
 						<input type="button" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
 					</div>
+					[% IF error %]
+						[% SET errorParam = "&error=$error" %]
+					[% ELSE %]
+						[% SET errorParam = "" %]
+					{% END %]
 					<script type="text/javascript"
-						src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR">
+						src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]">
 					</script>
 					<noscript>
-						<iframe src="http://api.recaptcha.net/noscript?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR" height="300" width="500" frameborder="0"></iframe><br>
+						<iframe src="http://api.recaptcha.net/noscript?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]" height="300" width="500" frameborder="0"></iframe><br>
 						
 					</noscript>
 				</div>

@@ -135,8 +135,8 @@ GET('/booking', function() {
 	this.property = property;
 	this.earliestSlot = earliestSlot;
 	this.days = days;
-	var bookingURL = '/booking.html' + (error || "");
-	return template(bookingURL);
+	this.error = error;
+	return template('/booking.html');
 });
 
 GET('/listFreeSlots', function() {
