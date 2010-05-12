@@ -358,11 +358,20 @@ SweetSoft = {};
 				slotEnd = new Date.today();
 				slotEnd.setISO8601(slot.endTime);
 				if(slotStart.compareTo(time) >= 0) {
-					return i;
-				} else if(slotEnd.compareTo(time) < 0) {
+					return {
+						index: i,
+						time: slotStart
+					}
+				} else if(slotEnd.compareTo(time) >= 0) {
+					return {
+						index: i,
+						time: time
+					};
+				} else {
 					continue;
 				}
 			}
+			return start;
 		}
 		var startTracker = new Date.now(),
 			freeSlotEndTracker,
@@ -402,13 +411,14 @@ SweetSoft = {};
 					} while(viewingStart.compareTo(time) < 0);
 				}
 			};
-		var i = findStartTime(freetimeSlots, startTracker);
-		if(typeof i === "undefined") {
+		var start = findStartTime(freetimeSlots, startTracker);
+		if(!start) {
 			throw new Error("Error: SweetSoft.listFreeSlots: can't find any freetime slots in the future");
 		}
-		for(var il=freetimeSlots.length, freetimeSlot; i<il; i++) {
+		for(var i=start.index, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
-			startTracker.setISO8601(freetimeSlot.startTime);
+			//startTracker.setISO8601(freetimeSlot.startTime);
+			startTracker = start.time;
 			freeSlotEndTracker = startTracker.clone();
 			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
 			dayTracker = startTracker.clone().clearTime().toISOString();
