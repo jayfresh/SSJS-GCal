@@ -28,9 +28,9 @@ GET('/time', function() {
 	var d = new Date.today();
 	var out = "new Date.today().toString();<br />"+d.toString()+"<br />";
 	out += "d.getTimezoneOffset();<br />"+d.getTimezoneOffset()+"<br />";
-	if(d.getTimezoneOffset===0) {
+	if(d.getTimezoneOffset()===0) {
 		d.setTimezoneOffset('-0100');
-		out += "d.setTimezoneOffset('-0100')<br />";
+		out += "d.setTimezoneOffset('-0100')<br />";	
 	}
 	out += "toISOString();<br />"+d.toISOString()+"<br />";
 	d.setISO8601('2010-05-11T09:00:00.000Z');
