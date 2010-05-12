@@ -348,7 +348,7 @@ SweetSoft = {};
 					move to end of slot
 		*/
 		
-		var startTracker = new Date.today(),
+		var startTracker = new Date.now(),
 			freeSlotEndTracker,
 			endTracker,
 			dayTracker,
