@@ -15,9 +15,14 @@ system.use("com.google.code.date"); // include datejs lib
 //system.use("date"); // the latest version of datejs, updated 2008-05-13
 system.use("GCal");
 system.use("SweetSoft");
+system.use("recaptcha");
 system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
 system.use("tests.SweetSoft_tests");
+
+GET('/headers', function() {
+	return objToString(this.request.headers) + "\n\n" + objToString(this.request);
+});
 
 GET('/time', function() {
 	var d = new Date.today();

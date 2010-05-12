@@ -35,7 +35,7 @@ TO-DO: protect the admin system with a password
 
 TO-DO: get the JavaScript working appropriately on the bookings page
 
-TO-DO: the times are an hour out when looking through smart platform
+TO-DO: the times are an hour out when looking through smart platform!
 
 TO-DO: get the images pre-loading on the booking page
 
@@ -59,6 +59,26 @@ POST('/createAppointment', function() {
 	if(options.attendees) {
 		options.attendees = options.attendees.split(","); /* TO-DO: remove any spaces at front or end of array elements */
 	}
+	
+	// check CAPTCHA
+	var captchaURL = "http://api-verify.recaptcha.net/verify";
+	var privatekey = SweetSoft.captcha.private_key; // This comes from a settings JS file not committed to the repo
+	var remoteip = "127.0.0.1"; // TO-DO: make this use the correct IP!
+	var challenge = query.recaptcha_challenge_field;
+	var response = query.recaptcha_response_field;
+	var data = "privatekey="+privatekey+"&remoteip="+remoteip+"&challenge="+challenge+"&response="+response;
+	var headers = [
+		'Content-Type','application/x-www-form-urlencoded'
+	];
+	var captcha = system.http.request("POST", captchaURL, headers, data);
+	var response_lines = captcha.content.split('\n');
+	var captcha_status = response_lines[0];
+	var captcha_error = response_lines[1];
+	return captcha.content+"\n\n"+objToString(query);
+	if(captcha_status === "false" && captcha_error) {
+		return redirect('/booking&error='+captcha_error);
+	}
+	
 	SweetSoft.init();
 	var response = SweetSoft.createAppointment(options);
 	this.options = options;
@@ -68,7 +88,8 @@ POST('/createAppointment', function() {
 GET('/booking', function() {
 	var query = this.request.query;
 	var accountID = query.accountID,
-		property = query.property;
+		property = query.property,
+		error = query.error;
 	if(!accountID || !property) {
 		return "<p>Please add these fields</p><form action='/booking' method='GET'><label for='accountID'>Account ID:</label><input type='text' name='accountID' id='accountID' size='40' /><label for='property'>Property address:</label><input type='text' name='property' id='property' size='40' /><input type='submit' /></form>";
 	}
@@ -115,7 +136,8 @@ GET('/booking', function() {
 	this.property = property;
 	this.earliestSlot = earliestSlot;
 	this.days = days;
-	return template('/booking.html');
+	var bookingURL = '/booking.html' + (error || "");
+	return template(bookingURL);
 });
 
 GET('/listFreeSlots', function() {

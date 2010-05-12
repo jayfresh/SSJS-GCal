@@ -62,9 +62,33 @@
 				<div class="alignright grid3col right margintopsmall">
 					<span class="smalltext">(enter the emails of people you would like to invite to the viewing, separated by commas)</span>
 				</div>
-				<div class="grid4col left  margintop">
-					<label>Verify that you are a human:</label>
-					<img class="margintopsmall" width="300px" src="images/recapcha.jpg" />
+				<div id="custom_theme_widget" class="grid4col left">
+					<script>
+						var RecaptchaOptions = {
+						   theme : 'custom'
+						};
+					</script>
+					<div class="grid1col left alignright medtext">
+						<label>Enter the two words below:</label>
+					</div>
+					<div class="grid3col left margintopsmall marginleft">
+						<input id="recaptcha_response_field" name="recaptcha_response_field" type="text"></input>
+					</div>
+					<br class="clearboth" />
+					<div class="margintopsmall" id="recaptcha_image"></div>
+					<div class="grid2col medtext margintopsmall left">
+						Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>
+					</div>
+					<div class="grid2col left margintopsmall marginleft">
+						<input type="button" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
+					</div>
+					<script type="text/javascript"
+						src="http://api.recaptcha.net/challenge?k=6LcCIroSAAAAAFFLW6fw2VdbiqXV8iwPc37CGFPW">
+					</script>
+					<noscript>
+						<iframe src="http://api.recaptcha.net/noscript?k=6LcCIroSAAAAAFFLW6fw2VdbiqXV8iwPc37CGFPW" height="300" width="500" frameborder="0"></iframe><br>
+						
+					</noscript>
 				</div>
 			</div>
 			<div class="grid6col left marginleft">
@@ -72,11 +96,11 @@
 				<input type="hidden" name="superMumID" value="[% accountID %]" />
 				<input type="hidden" name="property" value="[% property %]" />
 				
-				<input type="submit" id="bookSlot" class="margintop" value="Book for: [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %]" />
+				<input type="submit" id="bookSlot" class="margintop" value="Click to Book [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %]" />
 				<div class="margintop">
 					<span id="nextSlot" class="orange margintop">This is the next available slot.</span>
 					<div class="alignright right">
-						<!-- <button id="earlierSlot">Earlier Slot</button> -->
+						<button id="earlierSlot">Earlier Slot</button>
 						<button id="laterSlot">Later Slot</button>
 					</div>
 				</div>
