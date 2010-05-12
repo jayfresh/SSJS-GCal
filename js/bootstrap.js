@@ -26,16 +26,17 @@ GET('/headers', function() {
 
 GET('/time', function() {
 	var d = new Date.today();
+	var out = "new Date.today().toString();<br />"+d.toString()+"<br />";
+	out += "d.getTimezoneOffset();<br />"+d.getTimezoneOffset()+"<br />";
 	if(d.getTimezoneOffset===0) {
 		d.setTimezoneOffset('-0100');
+		out += "d.setTimezoneOffset('-0100')<br />";
 	}
-	var out = "new Date.today().toString();<br />"+d.toString()+"<br />";
 	out += "toISOString();<br />"+d.toISOString()+"<br />";
 	d.setISO8601('2010-05-11T09:00:00.000Z');
 	out += "d.setISO8601('2010-05-11T09:00:00.000Z'); d.toString();<br />"+d.toString()+"<br />";
 	out += "d.toISOString();<br />"+d.toISOString()+"<br />";
 	out += "d.toString('HH:mm');<br />"+d.toString("HH:mm")+"<br />";
-	out += "d.getTimezoneOffset();<br />"+d.getTimezoneOffset()+"<br />";
 	return out;
 });
 
