@@ -415,10 +415,8 @@ SweetSoft = {};
 		if(!start) {
 			throw new Error("Error: SweetSoft.listFreeSlots: can't find any freetime slots in the future");
 		}
-		var debug = "";
 		for(var i=start.index, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
-			//startTracker.setISO8601(freetimeSlot.startTime); - JRL: a relic from starting at the beginning of this freetimeSlot - remove when the method of starting at 'now' or the beginning of the next freetimeSlot has been tested (it's lacking testing in the middle of a freetimeSlot)
 			if(i!==start.index) {
 				startTracker.setISO8601(freetimeSlot.startTime);
 			} else {
@@ -426,15 +424,10 @@ SweetSoft = {};
 			}
 			freeSlotEndTracker = startTracker.clone();
 			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
-			//JRL: DEBUG - throw new Error('freeSlotEndTracker: '+freeSlotEndTracker.toISOString());
 			dayTracker = startTracker.clone().clearTime().toISOString();
 			nextViewingsSlot.movePast(startTracker);
-			//JRL: DEBUG - throw new Error('starting at i: '+i+', '+startTracker.toISOString()+', dayTracker: '+dayTracker);//+', nextViewingsSlot.startTime: '+nextViewingsSlot.startTime.toISOString()+', nextViewingsSlot.endTime: '+nextViewingsSlot.endTime.toISOString());
-			debug += "dayTracker: "+dayTracker+"\n";
-			debug += "freeSlotEndTracker: "+freeSlotEndTracker.toISOString()+"\n";
 			while(1) {
 				endTracker = startTracker.clone().add(duration).minutes();
-				debug+="endTracker: "+endTracker.toISOString()+"\n";
 				if(endTracker.compareTo(freeSlotEndTracker) > 0) {
 					break; // i.e. move onto next freetimeSlot
 				} else if(nextViewingsSlot.startTime && endTracker.compareTo(nextViewingsSlot.startTime) > 0) {
@@ -455,7 +448,6 @@ SweetSoft = {};
 				}
 			}
 		}
-		//throw new Error(debug);
 		return slots;
 	};
 	
