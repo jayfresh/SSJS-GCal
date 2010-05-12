@@ -328,11 +328,11 @@ SweetSoft.tests = {
 			};
 			var old_getEventsByTime = GCal.getEventsByTime;
 			GCal.getEventsByTime = function(options) {
-				var calendarName = options.calendarName;
+				var calendarID = options.calendarID;
 				var events;
-				if(calendarName===SweetSoft.config.viewingsCalendarName) {
+				if(calendarID===SweetSoft.config.viewingsCalendarName) {
 					events = SweetSoft.test_data.listFreeSlots.viewingsEvents;
-				} else if(calendarName===SweetSoft.config.freetimeCalendarName) {
+				} else if(calendarID===SweetSoft.config.freetimeCalendarName) {
 					events = SweetSoft.test_data.listFreeSlots.freetimeEvents;
 				}
 				return events;

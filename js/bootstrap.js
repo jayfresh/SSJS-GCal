@@ -18,7 +18,7 @@ system.use("SweetSoft");
 system.use("recaptcha");
 system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
-//system.use("tests.SweetSoft_tests");
+system.use("tests.SweetSoft_tests");
 
 /* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT */
 /*Date.prototype.old_toString = Date.prototype.toString;
@@ -79,8 +79,8 @@ GET('/tests', function() {
 	jsUnity.run(
 		//GCal.tests.newEvent,
 		//GCal.tests.getEventsByTime,
-		SweetSoft.tests.createAppointment,
-		SweetSoft.tests.init,
+		//SweetSoft.tests.createAppointment,
+		//SweetSoft.tests.init,
 		SweetSoft.tests.listFreeSlots
 	);
 	out += "<p>"+objToString(Log)+"</p>";

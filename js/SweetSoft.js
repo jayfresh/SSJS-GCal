@@ -347,7 +347,32 @@ SweetSoft = {};
 					create a slot (check it fits; if not, break)
 					move to end of slot
 		*/
-		
+		var movePast = function(time, slotArray) {
+			var slot,
+				slotStart,
+				slotEnd;
+			if(!slotArray.index) {
+				slotArray.index = 0;
+			}
+			if(slotArray.startTime && slotArray.startTime.compareTo(time) > 0) {
+				return;
+			}
+			do {
+				slot = slotArray[slotArray.index];
+				if(slot) {
+					slotStart = new Date.today();
+					slotStart.setISO8601(slot.startTime);
+					slotArray.startTime = slotStart;
+					slotEnd = slotStart.clone();
+					slotEnd.setISO8601(slot.endTime);
+					slotArray.endTime = slotEnd;
+					slotArray.index++;
+				} else {
+					slotArray.startTime = null;
+					slotArray.endTime = null;
+				}
+			} while(slotStart.compareTo(time) < 0);
+		};
 		var startTracker = new Date.now(),
 			freeSlotEndTracker,
 			endTracker,
@@ -360,8 +385,8 @@ SweetSoft = {};
 				viewings: bookedSlots,
 				index: 0,
 				startTime: "",
-				endTime: "",
-				movePast: function(time) {
+				endTime: ""
+				/*movePast: function(time) {
 					var viewing,
 						viewingStart,
 						viewingEnd;
@@ -384,7 +409,7 @@ SweetSoft = {};
 							return;
 						}
 					} while(viewingStart.compareTo(time) < 0);
-				}
+				}*/
 			};
 		for(var i=0, il=freetimeSlots.length, freetimeSlot; i<il; i++) {
 			freetimeSlot = freetimeSlots[i];
@@ -392,14 +417,15 @@ SweetSoft = {};
 			freeSlotEndTracker = startTracker.clone();
 			freeSlotEndTracker.setISO8601(freetimeSlot.endTime);
 			dayTracker = startTracker.clone().clearTime().toISOString();
-			nextViewingsSlot.movePast(startTracker);
+			//nextViewingsSlot.movePast(startTracker);
+			movePast(startTracker,nextViewingsSlot.viewings);
 			while(1) {
 				endTracker = startTracker.clone().add(duration).minutes();
 				if(endTracker.compareTo(freeSlotEndTracker) > 0) {
 					break; // i.e. move onto next freetimeSlot
 				} else if(nextViewingsSlot.startTime && endTracker.compareTo(nextViewingsSlot.startTime) > 0) {
 					startTracker = nextViewingsSlot.endTime; // i.e. skip past the nextViewingsSlot
-					nextViewingsSlot.movePast(startTracker);
+					movePast(startTracker,nextViewingsSlot.viewings);
 				} else {
 					duration = (endTracker - startTracker) / (60 * 1000);
 					if(SweetSoft.config.slotLengthMinutes >= duration) {
