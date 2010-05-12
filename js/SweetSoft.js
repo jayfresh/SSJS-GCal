@@ -74,7 +74,6 @@ POST('/createAppointment', function() {
 	var response_lines = captcha.content.split('\n');
 	var captcha_status = response_lines[0];
 	var captcha_error = response_lines[1];
-	return captcha.content+"\n\n"+objToString(query);
 	if(captcha_status === "false" && captcha_error) {
 		return redirect('/booking&error='+captcha_error);
 	}
