@@ -26,13 +26,14 @@ GET('/headers', function() {
 
 GET('/time', function() {
 	var d = new Date.today();
+	var out = "new Date.today().toString();<br />"+d.toString()+"<br />";
+	out += "toISOString();<br />"+d.toISOString()+"<br />";
 	d.setISO8601('2010-05-11T09:00:00.000Z');
-	return d.toString() + " " + d.toString("HH:mm");
-	return d.toLocaleString() + " " + d.getTimezoneOffset();
-	return objToString(Date.CultureInfo.abbreviatedTimeZoneDST);
-	return Date.getTimezoneOffset.toString();
-	return d.setTimezone.toString();
-	return d.toString() + "  " + d.toString("HH:mm") + "  " + d.toString.toString();
+	out += "d.setISO8601('2010-05-11T09:00:00.000Z'); d.toString();<br />"+d.toString()+"<br />";
+	out += "d.toISOString();<br />"+d.toISOString()+"<br />";
+	out += "d.toString('HH:mm');<br />"+d.toString("HH:mm")+"<br />";
+	out += "d.getTimezoneOffset();<br />"+d.getTimezoneOffset()+"<br />";
+	return out;
 });
 
 function objToString(obj) {
