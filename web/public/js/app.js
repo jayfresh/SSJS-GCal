@@ -6,7 +6,7 @@
 
 jQuery.validator.addMethod("phoneUK", function(phone_number, element) {
     phone_number = phone_number.replace(/\s+/g, "");
-    return this.optional(element) || phone_number.match(/\d{1,11}/);
+    return this.optional(element) || /^\d+$/.test(phone_number);
 }, "Please specify a valid phone number");
 
 $(document).ready(function() {
