@@ -318,9 +318,12 @@ SweetSoft = {};
 			nextWeek = today.clone().add(7).day(),
 			config = SweetSoft.config,
 			superMumID = options.accountID,
-			superMumCalendars = config.accounts[superMumID].calendars,
 			viewingsCalendarName = SweetSoft.config.viewingsCalendarName,
 			freetimeCalendarName = SweetSoft.config.freetimeCalendarName;
+		if(!config.accounts[superMumID]) {
+			throw new Error("Error: SweetSoft.listFreeSlots: can't find account for "+superMumID);
+		}
+		var superMumCalendars = config.accounts[superMumID].calendars;
 		verifyOptions(superMumCalendars, [
 			viewingsCalendarName,
 			freetimeCalendarName
