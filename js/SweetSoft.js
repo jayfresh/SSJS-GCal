@@ -53,7 +53,10 @@ POST('/createAppointment', function() {
 	
 	// clean up data
 	if(options.attendees) {
-		options.attendees = options.attendees.split(","); /* TO-DO: remove any spaces at front or end of array elements */
+		options.attendees = options.attendees.split(",");
+		for(var i=0,il=options.attendees.length; i<il; i++) {
+			options.attendees[i] = options.attendees[i].replace(/^\s+|\s+$/g, ""); // from jQuery.trim
+		}
 	}
 	
 	// check CAPTCHA
