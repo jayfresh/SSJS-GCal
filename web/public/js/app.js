@@ -9,6 +9,18 @@ jQuery.validator.addMethod("phoneUK", function(phone_number, element) {
     return this.optional(element) || /^\d+$/.test(phone_number);
 }, "Please specify a valid phone number");
 
+jQuery.validator.addMethod("emailList", function(list, element) {
+	list = list.split(",");
+	var valid = true;
+	$.each(list, function(i, email) {
+		if(!$.validator.methods.email(email)) {
+			valid = false;
+			return false;
+		}
+	});
+	return valid;
+}, "One or more of the email addresses are not valid");
+
 $(document).ready(function() {
 	$("#bookingSystem").validate();
 });
