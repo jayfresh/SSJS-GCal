@@ -12,8 +12,9 @@ jQuery.validator.addMethod("phoneUK", function(phone_number, element) {
 jQuery.validator.addMethod("emailList", function(list, element) {
 	list = list.split(",");
 	var valid = true;
+	var that = this;
 	$.each(list, function(i, email) {
-		if(!$.validator.methods.email(email)) {
+		if(!$.validator.methods.email.call(that,email)) {
 			valid = false;
 			return false;
 		}
@@ -34,7 +35,6 @@ $(document).ready(function() {
 	var $days = $('#week div.day');
 	var $radios = $('input[type=radio]');
 	$('input[type=radio]').click(function() {
-	
 		var iClicked = $radios.index(this);
 		if(iClicked===0) {
 			$('#earlierSlot').addClass('unclickable');
