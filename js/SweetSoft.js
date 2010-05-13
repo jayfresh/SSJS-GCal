@@ -35,9 +35,7 @@ TO-DO: write the mechanism for saving the admin info
 
 TO-DO: protect the admin system with a password
 
-TO-DO: get the JavaScript working appropriately on the bookings page
-
-TO-DO: get the images pre-loading on the booking page
+TO-DO: get the input backgrounds pre-loading on the booking page
 
 */
 
