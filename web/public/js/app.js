@@ -64,6 +64,9 @@ $(document).ready(function() {
 			$('#nextSlot').css('visibility', 'visible');
 		}
 	});
+	$('span.radio').live("click", function() {
+		$(this).next().click();
+	});
 	
 	/* earlier/later buttons */
 	$('#earlierSlot, #laterSlot').click(function(e) {
