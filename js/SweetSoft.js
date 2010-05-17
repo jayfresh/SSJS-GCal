@@ -35,7 +35,7 @@ TO-DO: write the mechanism for saving the admin info
 
 TO-DO: protect the admin system with a password
 
-TO-DO: get the input backgrounds pre-loading on the booking page
+TO-DO: get the input backgrounds pre-loading on the booking page - Josh to make sprites
 
 */
 
@@ -224,6 +224,25 @@ GET('/listSweetSoftAccounts', function() {
 		"<label for='phone'>SuperMum phone number</label>" +
 		"<input type='text' size='40' id='phone' name='phone' /><br />" +
 		"<input type='submit' /></form>";
+	return out;
+});
+
+GET('/listEventsThisWeek', function() {
+	var query = this.request.query,
+		accountID = query.accountID,
+		calendar = query.calendar,
+		today = new Date.today(), // 00:00 today
+		nextWeek = today.clone().add(7).day();
+	var events = GCal.getEventsByTime({
+		accountName: accountID,
+		calendarID: calendar,
+		startMin: today,
+		startMax: nextWeek
+	});
+	var out = "";
+	for(var i=0,il=events.length;i<il;i++) {
+		out += objToString(events[i]);
+	}
 	return out;
 });
 

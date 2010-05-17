@@ -211,6 +211,7 @@ var GCal = {};
 			startMin: startMin,
 			startMax: startMax
 		});
+		Log['events'] = objToString(response);
 		var eventsXML = makeXML(response);
 		var atom = Namespace('http://www.w3.org/2005/Atom');
 		var gd = Namespace('http://schemas.google.com/g/2005');
@@ -329,7 +330,8 @@ var GCal = {};
 			url += "/"+calendarID+"/private/full";
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
-			query = "start-min="+startMin+"&"+"start-max="+startMax;
+			query = "start-min="+startMin+"&start-max="+startMax;
+			query += "&singleevents=true&recurrence-expansion-start="+startMin+"&recurrence-expansion-end="+startMax;
 			query += "&orderby=starttime&sortorder=ascending";
 		}
 		
