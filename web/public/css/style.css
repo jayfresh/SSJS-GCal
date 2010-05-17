@@ -40,10 +40,6 @@ a {
 	color: #fca961;
 }
 
-.onlyjs {
-	visibility: hidden;
-}
-
 /*--------------------------Typography */
 
 address, h2 {
@@ -286,18 +282,18 @@ input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earli
 
 #recaptcha_reload_btn {
 	border: none;
-	font-size: 0.9em;
-	font-weight: bold;
+	font-size: 0.85em;
 	font-family: "Helvetica Neue", Helvetica, Arial, Sans-serif;
 	letter-spacing: 0.02em;
-	width: 140px;
-	height: 30px;
-	color: #858585;
-	text-align: center;
+	color: #fca961;
+	text-align: right;
 	cursor: pointer;
-	background-image: url(../images/recaptcha_button.png);
-	background-position: top left;
-	
+	background-color: white;
+	background-image: none;
+	width: 90px;
+	padding: 0 0;
+	height: 1.2em;
+		
 }
 
 #recaptcha_reload_btn:hover {
