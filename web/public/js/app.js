@@ -23,6 +23,32 @@ jQuery.validator.addMethod("emailList", function(list, element) {
 	return valid;
 }, "One or more email address invalid");
 
+/* thanks to http://delete.me.uk/2005/03/iso8601.html for this function */
+Date.prototype.setISO8601 = function (string) {
+	var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+		"(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+		"(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+	var d = string.match(new RegExp(regexp));
+	
+	var offset = 0;
+	var date = new Date(d[1], 0, 1);
+	
+	if (d[3]) { date.setMonth(d[3] - 1); }
+	if (d[5]) { date.setDate(d[5]); }
+	if (d[7]) { date.setHours(d[7]); }
+	if (d[8]) { date.setMinutes(d[8]); }
+	if (d[10]) { date.setSeconds(d[10]); }
+	if (d[12]) { date.setMilliseconds(Number("0." + d[12]) * 1000); }
+	if (d[14]) {
+		offset = (Number(d[16]) * 60) + Number(d[17]);
+		offset *= ((d[15] == '-') ? 1 : -1);
+	}
+	
+	offset -= date.getTimezoneOffset();
+	time = (Number(date) + (offset * 60 * 1000));
+	this.setTime(Number(time));
+}
+
 $(document).ready(function() {
 	$("#bookingSystem").validate();
 });
@@ -48,15 +74,22 @@ $(document).ready(function() {
 		var $day = $(this).closest('div.day');
 		var start_time = $(this).val(); // e.g. "2010-05-12T15:00:00.000Z"
 		var i = $days.index($day);
-		var timeLabel = this.id.substring(1);
+		var timeLabel = this.id.substring(this.id.length-5);
+		var d = new Date();
+		d.setISO8601(start_time);
+		var dayDiff = Math.floor((d - new Date())/(1000*60*60*24));
 		var dayLabel = "";
-		if(i===0) {
-			dayLabel = earliestSlot.dayLabel==="Today" ? "Today" : "Tomorrow";
-		} else if(i===1) {
-			dayLabel = earliestSlot.dayLabel==="Today" ? "Tomorrow" : start_time.substring(8,10)+"/"+start_time.substring(5,7);
+		if(dayDiff===0) {
+			dayLabel = "Today";
+		} else if(dayDiff===1) {
+			dayLabel = "Tomorrow";
 		} else {
-			dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
-		}
+			if(i===0) {
+				dayLabel = earliestSlot.dayLabel;
+			} else {
+				dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
+			}
+		} 
 		$('#bookSlot').val(bookSlot_orig+" "+timeLabel+" "+dayLabel);
 		if(i!==0 || timeLabel!==earliestSlot.timeLabel) {
 			$('#nextSlot').css('visibility','hidden');
