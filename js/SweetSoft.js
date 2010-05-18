@@ -125,8 +125,42 @@ GET('/booking', function() {
 			dd.setISO8601(slot.startTime);
 			slot.timeLabel = dd.toString('HH:mm');
 		}
+		var dayLabel;
+		switch(d.getDayName()) {
+			case "Monday": {
+				dayLabel = "M";
+				break;
+			}
+			case "Tuesday": {
+				dayLabel = "Tu";
+				break;
+			}
+			case "Wednesday": {
+				dayLabel = "W";
+				break;
+			}
+			case "Thursday": {
+				dayLabel = "Th";
+				break;
+			}
+			case "Friday": {
+				dayLabel = "F";
+				break;
+			}
+			case "Saturday": {
+				dayLabel = "Sa";
+				break;
+			}
+			case "Sunday": {
+				dayLabel = "Su";
+				break;
+			}
+			default: {
+				break;
+			}
+		}
 		days.push({
-			label: d.getDayName()[0],
+			label: dayLabel,
 			slots: slots
 		});
 	}
