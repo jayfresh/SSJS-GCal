@@ -61,7 +61,7 @@ $(document).ready(function() {
 	$('#bookSlot').val(bookSlot_orig+" "+earliestSlot.timeLabel+" "+earliestSlot.dayLabel);
 	var $days = $('#week div.day');
 	var $radios = $('input[type=radio]');
-	$('input[type=radio]').click(function() {
+	$radios.click(function() {
 		var iClicked = $radios.index(this);
 		if(iClicked===0) {
 			$('#earlierSlot').addClass('unclickable');
@@ -77,19 +77,26 @@ $(document).ready(function() {
 		var timeLabel = this.id.substring(this.id.length-5);
 		var d = new Date();
 		d.setISO8601(start_time);
-		var dayDiff = Math.floor((d - new Date())/(1000*60*60*24));
+		var now = new Date();
+		var dayDiff = d.getDate() - now.getDate();
+		var monthDiff = d.getMonth() - now.getMonth();
+		var yearDiff = d.getYear() - now.getYear();
 		var dayLabel = "";
-		if(dayDiff===0) {
-			dayLabel = "Today";
-		} else if(dayDiff===1) {
-			dayLabel = "Tomorrow";
-		} else {
-			if(i===0) {
-				dayLabel = earliestSlot.dayLabel;
+		if(monthDiff===0 && yearDiff===0) {
+			if(dayDiff===0) {
+				dayLabel = "Today";
+			} else if(dayDiff===1) {
+				dayLabel = "Tomorrow";
 			} else {
-				dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
+				if(i===0) {
+					dayLabel = earliestSlot.dayLabel;
+				} else {
+					dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
+				}
 			}
-		} 
+		} else {
+			dayLabel = start_time.substring(8,10)+"/"+start_time.substring(5,7);
+		}
 		$('#bookSlot').val(bookSlot_orig+" "+timeLabel+" "+dayLabel);
 		if(i!==0 || timeLabel!==earliestSlot.timeLabel) {
 			$('#nextSlot').css('visibility','hidden');
@@ -112,4 +119,6 @@ $(document).ready(function() {
 		i += direction;
 		$radios.eq(i).click();
 	});
+	
+	$radios.filter(':checked').eq(0).click();
 });

@@ -26,78 +26,71 @@
 		<form id="bookingSystem" method="POST" action="/createAppointment">
 			<div class="grid4col left">
 				<div class="grid4col left">
-					<div class="grid3col right">
-						<h2>Your Details:</h2>
-					</div>
+					<h2>Enter Your Details:</h2>
 				</div>
-				<div class="grid1col padtop margintop left alignright">
-					<label for="name">Name:</label>
-				</div>
-				<div class="grid3col left margintop marginleft">
-					<input type="text" name="student_name" id="name" class="required" />
-					<span class="spacer"></span>
-				</div>
+				
 				<br class="clearboth" />
-				<div class="grid1col padtop left alignright margintopsmall">
-					<label for="email">Email:</label>
-				</div>
-				<div class="grid3col left marginleft margintopsmall">
-					<input type="text" name="student_email" id="email" class="email required" />
-					<span class="spacer"></span>
-				</div>
-				<br class="clearboth" />
-				<div class="grid1col left padtop alignright margintopsmall">
-					<label for="phone">Phone:</label>
-				</div>
-				<div class="grid3col left marginleft margintopsmall">
-					<input type="text" name="student_phone" id="phone" class="required phoneUK" />
-					<span class="spacer"></span>
-				</div>
-				<br class="clearboth" />
-				<div class="grid1col left padtop alignright margintopsmall">
-					<label for="invite">Invite:</label>
-				</div>
-				<div class="grid3col left marginleft margintopsmall">
-					<textarea class="emailList" rows="4" name="attendees" id="invite"></textarea>
-				</div>
-				<div class="alignright grid3col right margintopsmall">
-					<span class="smalltext">(enter the emails of people you would like to invite to the viewing, separated by commas)</span>
-				</div>
-				<div id="custom_theme_widget" class="grid4col left">
-					<script>
-						var RecaptchaOptions = {
-						   theme : 'custom'
-						};
-					</script>
-					<div class="grid1col left alignright medtext">
-						<label>Enter the two words below:</label>
+				<div class="grid2col left">
+					<div class="grid2col left margintop">
+						<label for="name">Name:</label>
+						<input type="text" name="student_name" id="name" class="required" />
+						<span class="spacer"></span>
 					</div>
-					<div class="grid3col left margintopsmall marginleft">
-						<input id="recaptcha_response_field" name="recaptcha_response_field" type="text"></input>
-						<div class="recaptcha_only_if_incorrect_sol"></div>
+					<div class="grid2col left">
+						<label for="phone">Phone:</label>
+						<input type="text" name="student_phone" id="phone" class="required phoneUK" />
+						<span class="spacer"></span>
 					</div>
-					<br class="clearboth" />
-					<div class="margintopsmall" id="recaptcha_image"></div>
-					<div class="grid2col medtext margintopsmall left">
-						Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>
-					</div>
-					<div class="grid2col left margintopsmall marginleft">
-						<span class="medtext alignright right">Powered by <a href="http://recaptcha.net/">Recaptcha</a></span>
-						<input type="button" class="right" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
+					<div id="custom_theme_widget" class="grid4col left">
+						<script>
+							var RecaptchaOptions = {
+							   theme : 'custom'
+							};
+						</script>
+						<div class="grid2col left margintop">
+							<label class="smalltext">Enter the two words below:</label>
+							<input id="recaptcha_response_field" name="recaptcha_response_field" type="text" class="required" />
+							<span class="spacer"></span>
+							<div class="orange recaptcha_only_if_incorrect_sol">Incorrect. Please try again.</div>
+						</div>
 						<br class="clearboth" />
-					</div>
-					[% IF error %]
-						[% SET errorParam = "&error=$error" %]
-					[% ELSE %]
-						[% SET errorParam = "" %]
-					[% END %]
-					<script type="text/javascript"
-						src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]">
-					</script>
-					<noscript>
+						<div class="margintopsmall" id="recaptcha_image"></div>
+						<div class="grid2col medtext margintopsmall left">
+							Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>
+						</div>
+						<div class="grid2col left margintopsmall marginleft">
+							<span class="medtext alignright right">Powered by <a href="http://recaptcha.net/">Recaptcha</a></span> 
+							<input type="button" class="right" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
+							<br class="clearboth" />
+							
+						</div>
+						[% IF error %]
+							[% SET errorParam = "&error=$error" %]
+						[% ELSE %]
+							[% SET errorParam = "" %]
+						[% END %]
+						<script type="text/javascript"
+							src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]">
+						</script>
+						<noscript>
 						<iframe src="http://api.recaptcha.net/noscript?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]" height="300" width="500" frameborder="0"></iframe><br>
 						
 					</noscript>
+					</div>
+				</div> <!-- end of left column div -->
+				<div class="grid2col left marginleft margintop">
+					<div class="grid2col left">
+						<label for="email">Email:</label>
+						<input type="text" name="student_email" id="email" class="required email" />
+						<span class="spacer"></span>
+					</div>
+					<label for="invite">Invite:</label>
+					<textarea rows="4" name="attendees" id="invite" class="emailList"></textarea>
+					<br class="clearboth" />
+					<p class="grid2col right notopmargin smalltext">
+						(enter the emails of people you would like to invite to the viewing, separated by commas)
+					</p>
+				
 				</div>
 			</div>
 			<div class="grid6col left marginleft">
@@ -105,7 +98,7 @@
 				<input type="hidden" name="superMumID" value="[% accountID %]" />
 				<input type="hidden" name="property" value="[% property %]" />
 				
-				<div id="allSlots" class="grid6col rounded right margintop">
+				<div id="allSlots" class="grid6col right margintop">
 					<span id="seeAll"><span class="onlyjs">Click To See </span>All Slots This Week</span>
 					<div id="week">
 						[% FOREACH day = days %]

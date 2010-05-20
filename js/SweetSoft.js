@@ -430,7 +430,7 @@ SweetSoft = {};
 			}
 			return start;
 		}
-		var startTracker = new Date.now(),
+		var startTracker = new Date.now().clearTime().add(1).day(),
 			freeSlotEndTracker,
 			endTracker,
 			dayTracker,

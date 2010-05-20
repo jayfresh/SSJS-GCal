@@ -36,6 +36,9 @@ body {
 	outline: none;
 }
 
+
+
+
 a {
 	color: #fca961;
 }
@@ -53,6 +56,10 @@ address, h2 {
 }
 .orange {
 	color: #fbb75f;
+}
+
+#bookingSystem p.notopmargin {
+	margin-top: 0px;
 }
 
 span#seeAll {
@@ -114,7 +121,7 @@ label {
 	font-weight: bold;
 	font-style: italic;
 	height: 15px;
-	width: 150px;
+	width: 120px;
 	text-align: right;
 	float: right;
 	color: #fbb75f;
@@ -146,6 +153,7 @@ label {
 
 #allSlots {
 	background-color: #f7f7f7;
+	margin-top: 39px;
 }
 
 #week {
@@ -164,31 +172,40 @@ label {
 /*--------------------------Forms */
 
 input {
-	width: 200px;
-	border: none white;
-	height: 30px;
-	padding: 0 10px;
-	background-image: url(../images/form.png);
+	width: 120px;
+/*	border: 1px solid #ccc; */
+	border: none;
+	height: 10px;
+	padding: 10px 10px;
+	background-color: #f7f7f7;
+	/*background-image: url(../images/form.png);
 	background-repeat: no-repeat;
-	background-position: center center;
+	background-position: center center; */
 }
 
 input:hover, input:focus {
-	background-image: url(../images/form_alert.png)
+	background-color: #fde2c3;
+/*	background-image: url(../images/form_alert.png) */
 }
 
 textarea#invite {
-	background-image: url(../images/invite.png);
-	height: 80px;
-	width: 200px;
+/*	background-image: url(../images/invite.png); */
+	height: 48px;
+	width: 120px;
 	padding: 10px;
 	border: none;
+/*	border: 1px solid #ccc; */
+	background-color: #f7f7f7;
 	background-repeat: no-repeat;
 	background-position: center center;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 0.8em;
 }
 
 textarea#invite:hover, textarea#invite:focus {
-	background-image: url(../images/invite_alert.png);
+/*	background-image: url(../images/invite_alert.png); */
+	background-color: #fde2c3;
+
 }
 
 #week input {
@@ -242,9 +259,11 @@ textarea#invite:hover, textarea#invite:focus {
 input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earlierSlot::-moz-focus-inner, #laterSlot::-moz-focus-inner {
 	outline: none;
 	border: none;
+	background-position: 0px -50px;
 }
 
 #earlierSlot, #laterSlot {
+	background-color: #EAEAEA;
 	border: none;
 	font-size: 0.9em;
 	font-weight: bold;
@@ -270,6 +289,20 @@ input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earli
 #earlierSlot:hover {
 	background-position:  0px 20px;
 }
+
+#earlierSlot.unclickable:hover {
+	 background-position: 0px 0px;
+}
+
+#laterSlot.unclickable:hover {
+	background-position: 0px 0px;
+}
+
+#earlierSlot.unclickable, #laterSlot.unclickable {
+	color: #eaeaea;
+	cursor: default;
+}
+
 #laterSlot:hover {
 	background-position: 0px 20px;
 }
