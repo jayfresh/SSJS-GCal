@@ -21,7 +21,7 @@ jQuery.validator.addMethod("emailList", function(list, element) {
 		}
 	});
 	return valid;
-}, "One or more email address invalid");
+}, "Valid emails only please");
 
 /* thanks to http://delete.me.uk/2005/03/iso8601.html for this function */
 Date.prototype.setISO8601 = function (string) {
