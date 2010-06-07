@@ -96,7 +96,7 @@
 						</script>
 						<div class="grid3col left">
 							<label class="">Enter the two words below:</label>
-							<input id="recaptcha_response_field" name="recaptcha_response_field" type="text" class="required"></input>
+							<input id="recaptcha_response_field" name="recaptcha_response_field" type="text" class="required" />
 							<span class="spacer"></span>
 							<div class="orange recaptcha_only_if_incorrect_sol">Incorrect. Please try again.</div>
 						</div>
@@ -121,10 +121,10 @@
 							[% SET errorParam = "" %]
 						[% END %]
 						<script type="text/javascript"
-							src="http://api.recaptcha.net/challenge?k=6Le4HboSAAAAAIhG4Xm0LZ_EcO7CjsN-DgXytENW">
+							src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]">
 						</script>
 						<noscript>
-							<iframe src="http://api.recaptcha.net/noscript?k=6Le4HboSAAAAAIhG4Xm0LZ_EcO7CjsN-DgXytENW" height="300" width="500" frameborder="0"></iframe><br>
+							<iframe src="http://api.recaptcha.net/noscript?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]" height="300" width="500" frameborder="0"></iframe><br>
 							
 						</noscript>
 					</div>
