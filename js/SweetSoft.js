@@ -8,6 +8,8 @@ requires:
 system.use("com.google.code.date");
 system.use("com.joyent.Resource");
 
+NB: although event attendees will be emailed an invite, the person whose calendar is being used will not receive a notification. I am using an email notifier on the RSS feed of the calendar to alert me when new events are created. Another option would be to extend this to use an email service - using the person's Gmail would not work as expected since Gmail does not show email that come from your own email address.
+
 SweetSoft stores accounts as a "SweetSoftAccount" resource. An account has this structure:
 {
 	id: "person1"
