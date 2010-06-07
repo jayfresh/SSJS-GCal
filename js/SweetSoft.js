@@ -325,10 +325,7 @@ SweetSoft = {};
 			attendees = [{
 				name: data.student_name,
 				email: data.student_email
-			}, {
-				name: account.name,
-				email: account.email
-			}]; // TO-DO: replace including account as an invitee with sending an alerting email to account.email letting them know a new event has been booked - using the invitee method here as a quick fix - NB: GMail does not show emails from your own email address, so you will want to set the viewings calendar up to notify you on new invites
+			}];
 		for(var i=0, il=attendeeList.length, email; i<il; i++) {
 			email = attendeeList[i];
 			attendees.push({
