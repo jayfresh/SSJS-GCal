@@ -31,11 +31,9 @@ During config setup, SweetSoft gets the accounts from Gcal and merges the 'calen
 
 TO-DO: write tests for account creation
 
-TO-DO: write the mechanism for saving the admin info
+TO-DO: write the mechanism for editing/saving the admin info
 
 TO-DO: protect the admin system with a password
-
-TO-DO: get the input backgrounds pre-loading on the booking page - Josh to make sprites
 
 */
 
@@ -327,7 +325,10 @@ SweetSoft = {};
 			attendees = [{
 				name: data.student_name,
 				email: data.student_email
-			}];
+			}, {
+				name: account.name,
+				email: account.email
+			}]; // TO-DO: replace including account as an invitee with sending an alerting email to account.email letting them know a new event has been booked - using the invitee method here as a quick fix
 		for(var i=0, il=attendeeList.length, email; i<il; i++) {
 			email = attendeeList[i];
 			attendees.push({
