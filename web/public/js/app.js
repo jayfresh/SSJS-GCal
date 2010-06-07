@@ -99,9 +99,11 @@ $(document).ready(function() {
 		}
 		$('#bookSlot').val(bookSlot_orig+" "+timeLabel+" "+dayLabel);
 		if(i!==0 || timeLabel!==earliestSlot.timeLabel) {
-			$('#nextSlot').css('visibility','hidden');
+			$('#slotLabel').text("Chosen slot: "+timeLabel+" "+dayLabel);
+			//$('#nextSlot').css('visibility','hidden');
 		} else {
-			$('#nextSlot').css('visibility', 'visible');
+			$('#slotLabel').text("The next available slot is "+timeLabel+" "+dayLabel);
+			//$('#nextSlot').css('visibility', 'visible');
 		}
 	});
 	$('span.radio').live("click", function() {

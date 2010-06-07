@@ -33,7 +33,7 @@
 					<input type="hidden" name="property" value="[% property %]" />
 				</div>
 				<div class="grid6col left marginleft">
-					<h3 class="orange">The Next Available Slot Is [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %].</h3>
+					<h3 class="orange" id="slotLabel">The Next Available Slot Is [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %].</h3>
 					<div class="aligncentre grid3col">
 						<button id="earlierSlot" class="onlyjs margintopsmall">Earlier Slot</button>
 						<button id="laterSlot" class="onlyjs margintopsmall">Later Slot</button>
@@ -135,7 +135,7 @@
 					<h2>3/ Book Yo Viewing:</h2>
 				</div>
 				<div class="grid6col left marginleft">
-					<input type="submit" id="bookSlot" value="Click to Book [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %]" />
+					<input type="submit" id="bookSlot" value="Click to Book" />
 					<!--<div class="margintop">
 						<span id="nextSlot" class="onlyjs orange margintop">This is the next available slot.</span>
 					</div> -->
