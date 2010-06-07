@@ -15,6 +15,12 @@ $(document).ready(function(){
 				$(this).blur();
 			}
 		});
+	$('input[type=radio]').click(function() {
+		var $slotList = $('#seeAll').next();
+		if($slotList.is(':visible')) {
+			$('#seeAll').click();
+		}
+	});
 });
 
 function toggleSection(section){
