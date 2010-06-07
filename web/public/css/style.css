@@ -116,6 +116,10 @@ span#seeAll:hover {
 	color: white;
 }
 
+.js #week {
+	visibility: hidden;
+}
+
 label {
 	font-weight: bold;
 }
