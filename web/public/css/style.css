@@ -25,7 +25,7 @@ body {
 }
 
 .padtop {
-	padding-top: 6px
+	padding-top: 15px
 }
 .clearboth {
 	clear: both;
@@ -43,6 +43,10 @@ a {
 	color: #fca961;
 }
 
+.topborder {
+	border-top: 2px solid #fca961;
+}
+
 /*--------------------------Typography */
 
 address, h2 {
@@ -51,9 +55,19 @@ address, h2 {
 	color: #cdcdcd;
 }
 
+h3 {
+	font-size: 1.4em;
+	text-align: center;
+}
+
 .alignright {
 	text-align: right;
 }
+
+.aligncentre {
+	margin: auto;
+}
+
 .orange {
 	color: #fbb75f;
 }
@@ -153,7 +167,6 @@ label {
 
 #allSlots {
 	background-color: #f7f7f7;
-	margin-top: 39px;
 }
 
 #week {
@@ -172,7 +185,7 @@ label {
 /*--------------------------Forms */
 
 input {
-	width: 120px;
+	width: 200px;
 /*	border: 1px solid #ccc; */
 	border: none;
 	padding: 10px 10px;
@@ -190,7 +203,7 @@ input:hover, input:focus {
 textarea#invite {
 /*	background-image: url(../images/invite.png); */
 	height: 48px;
-	width: 120px;
+	width: 200px;
 	padding: 10px;
 	border: none;
 /*	border: 1px solid #ccc; */

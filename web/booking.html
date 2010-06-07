@@ -23,44 +23,95 @@
 
 <body>
 	<div id="wrap">
-		<form id="bookingSystem" method="POST" action="/createAppointment">
-			<div class="grid4col left">
+	
+	<form id="bookingSystem" method="POST" action="/createAppointment">
+			<div class="grid10col left padtop topborder">
 				<div class="grid4col left">
-					<h2>Enter Your Details:</h2>
+					<h2>1/ Choose A Slot:</h2>
+					<!-- <address>[% property %]</address> -->
+					<input type="hidden" name="superMumID" value="[% accountID %]" />
+					<input type="hidden" name="property" value="[% property %]" />
 				</div>
-				
-				<br class="clearboth" />
-				<div class="grid2col left">
-					<div class="grid2col left margintop">
+				<div class="grid6col left marginleft">
+					<h3 class="orange">The Next Available Slot Is [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %].</h3>
+					<div class="aligncentre grid3col">
+						<button id="earlierSlot" class="onlyjs margintopsmall">Earlier Slot</button>
+						<button id="laterSlot" class="onlyjs margintopsmall">Later Slot</button>
+					</div>
+					<div id="allSlots" class="grid6col right margintopsmall">
+						<span id="seeAll">Click To See All Slots This Week</span>
+						<div id="week">
+							[% FOREACH day = days %]
+							<div class="day left">
+								<span>[% day.label %]</span>
+								<ul>
+									[% FOREACH slot = day.slots %]
+									<li>
+										[% IF slot.earliest %]
+											<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" class="styled" checked="checked" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
+										[% ELSE %]
+											<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" class="styled" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
+										[% END %]
+									[% END %]
+								</ul>
+							</div>
+							[% END %]
+							<br class="clearboth"/>					
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="grid10col left margintop padtop topborder">
+				<div class="grid4col left">
+					<h2>2/ Enter Your Details:</h2>
+				</div>
+				<div class="grid6col left marginleft">
+					<div class="grid3col left">
 						<label for="name">Name:</label>
 						<input type="text" name="student_name" id="name" class="required" />
 						<span class="spacer"></span>
 					</div>
-					<div class="grid2col left">
+					<div class="grid3col left marginleft">
 						<label for="phone">Phone:</label>
 						<input type="text" name="student_phone" id="phone" class="required phoneUK" />
 						<span class="spacer"></span>
 					</div>
-					<div id="custom_theme_widget" class="grid4col left">
+					<div class="grid3col left">
+						<label for="email">Email:</label>
+						<input type="text" name="student_email" id="email" class="required email" />
+						<span class="spacer"></span>
+					</div>
+					<div class="grid3col right marginleft">
+						<label for="invite">Invite:</label>
+						<textarea rows="4" name="attendees" id="invite" class="emailList"></textarea>
+						<p class="grid3col right notopmargin smalltext">
+							(enter the emails of people you would like to invite to the viewing, separated by commas)
+						</p>
+					</div>
+					<div id="custom_theme_widget" class="grid3col left">
 						<script>
 							var RecaptchaOptions = {
 							   theme : 'custom'
 							};
 						</script>
-						<div class="grid2col left margintop">
-							<label class="smalltext">Enter the two words below:</label>
-							<input id="recaptcha_response_field" name="recaptcha_response_field" type="text" class="required" />
+						<div class="grid3col left">
+							<label class="">Enter the two words below:</label>
+							<input id="recaptcha_response_field" name="recaptcha_response_field" type="text" class="required"></input>
 							<span class="spacer"></span>
 							<div class="orange recaptcha_only_if_incorrect_sol">Incorrect. Please try again.</div>
 						</div>
 						<br class="clearboth" />
-						<div class="margintopsmall" id="recaptcha_image"></div>
-						<div class="grid2col medtext margintopsmall left">
-							Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>
+						<div class="grid6col">
+							<div class="grid4col">
+								<div class="margintopsmall" id="recaptcha_image"></div>
+								<div class="grid2col medtext margintopsmall left">
+									Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>
+								</div>
+								<div class="grid2col left margintopsmall marginleft">
+									<span class="medtext alignright right">Powered by <a href="http://recaptcha.net/">Recaptcha</a></span> 
+									<input type="button" class="right" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
+							</div>
 						</div>
-						<div class="grid2col left margintopsmall marginleft">
-							<span class="medtext alignright right">Powered by <a href="http://recaptcha.net/">Recaptcha</a></span> 
-							<input type="button" class="right" id="recaptcha_reload_btn" value="Get new words" onclick="Recaptcha.reload();" />
 							<br class="clearboth" />
 							
 						</div>
@@ -70,68 +121,27 @@
 							[% SET errorParam = "" %]
 						[% END %]
 						<script type="text/javascript"
-							src="http://api.recaptcha.net/challenge?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]">
+							src="http://api.recaptcha.net/challenge?k=6Le4HboSAAAAAIhG4Xm0LZ_EcO7CjsN-DgXytENW">
 						</script>
 						<noscript>
-						<iframe src="http://api.recaptcha.net/noscript?k=6LfWIboSAAAAAPOpN146Hd3nHqKe9JhSm5jAC9FR[% errorParam %]" height="300" width="500" frameborder="0"></iframe><br>
-						
-					</noscript>
+							<iframe src="http://api.recaptcha.net/noscript?k=6Le4HboSAAAAAIhG4Xm0LZ_EcO7CjsN-DgXytENW" height="300" width="500" frameborder="0"></iframe><br>
+							
+						</noscript>
 					</div>
-				</div> <!-- end of left column div -->
-				<div class="grid2col left marginleft margintop">
-					<div class="grid2col left">
-						<label for="email">Email:</label>
-						<input type="text" name="student_email" id="email" class="required email" />
-						<span class="spacer"></span>
-					</div>
-					<label for="invite">Invite:</label>
-					<textarea rows="4" name="attendees" id="invite" class="emailList"></textarea>
-					<br class="clearboth" />
-					<p class="grid2col right notopmargin smalltext">
-						(enter the emails of people you would like to invite to the viewing, separated by commas)
-					</p>
-				
-				</div>
+				</div> <!-- end details div -->
 			</div>
-			<div class="grid6col left marginleft">
-				<address>[% property %]</address>
-				<input type="hidden" name="superMumID" value="[% accountID %]" />
-				<input type="hidden" name="property" value="[% property %]" />
-				
-				<div id="allSlots" class="grid6col right margintop">
-					<span id="seeAll"><span class="onlyjs">Click To See </span>All Slots This Week</span>
-					<div id="week">
-						[% FOREACH day = days %]
-						<div class="day left">
-							<span>[% day.label %]</span>
-							<ul>
-								[% FOREACH slot = day.slots %]
-								<li>
-									[% IF slot.earliest %]
-										<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" class="styled" checked="checked" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
-									[% ELSE %]
-										<input type="radio" id="[% day.label %][% slot.timeLabel %]" name="start_time" value="[% slot.startTime %]" class="styled" /><label for="[% day.label %][% slot.timeLabel %]">[% slot.timeLabel %]</label></li>
-									[% END %]
-								[% END %]
-							</ul>
-						</div>
-						[% END %]
-						<br class="clearboth"/>					
-					</div>
+			<div class="grid10col left margintop padtop topborder">
+				<div class="grid4col left">
+					<h2>3/ Book Yo Viewing:</h2>
 				</div>
-				<input type="submit" id="bookSlot" class="margintop" value="Click to Book" />
-				<div class="margintop">
-					<span id="nextSlot" class="onlyjs orange margintop">This is the next available slot.</span>
-					<div class="alignright right">
-						<button id="earlierSlot" class="onlyjs">Earlier Slot</button>
-						<button id="laterSlot" class="onlyjs">Later Slot</button>
-					</div>
+				<div class="grid6col left marginleft">
+					<input type="submit" id="bookSlot" value="Click to Book [% earliestSlot.timeLabel %] [% earliestSlot.dayLabel %]" />
+					<!--<div class="margintop">
+						<span id="nextSlot" class="onlyjs orange margintop">This is the next available slot.</span>
+					</div> -->
 				</div>
-			</div>
-					
-		</form>
-	
-	
+			</div>	
+		</form>	
 	</div>
 
 
