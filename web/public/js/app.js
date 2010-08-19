@@ -54,6 +54,8 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
+	console.log(parent.window.document.getElementById("bookview").height);
+	console.log(document.body.offsetHeight);
 	$('.onlyjs').css('visibility', 'visible');
 	
 	/* interaction between big booking button, label and the radio buttons */
