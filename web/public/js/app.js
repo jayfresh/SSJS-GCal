@@ -128,13 +128,12 @@ $(document).ready(function() {
 	$radios.filter(':checked').eq(0).click();
 });
 
-function $(id) { return document.getElementById(id); }
 
 window.onload = function() {
  /* setInterval(function() {
     var hashVal = window.location.hash.substr(1);
     document.body.style.backgroundColor = hashVal;
   }, 1000);*/
-	parent.window.location.hash = "speedUp";
+
 
 }
