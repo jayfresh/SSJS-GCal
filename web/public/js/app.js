@@ -55,7 +55,8 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	console.log(document.body.offsetHeight);
-	parent.window.location+='#'+document.body.offsetHeight;
+	parent.window.location.hash = document.body.offsetHeight;
+	setInterval(function() {console.log(document.body.offsetHeight); }, 0);
 	$('.onlyjs').css('visibility', 'visible');
 	
 	/* interaction between big booking button, label and the radio buttons */
