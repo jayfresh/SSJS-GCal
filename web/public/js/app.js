@@ -54,9 +54,9 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-	//console.log(document.body.offsetHeight);
-	//parent.window.location.hash = document.body.offsetHeight;
-	//setInterval(function() {console.log(document.body.offsetHeight); }, 0);
+
+	parent.window.location.hash = "speedUp";
+
 	$('.onlyjs').css('visibility', 'visible');
 	
 	/* interaction between big booking button, label and the radio buttons */
@@ -127,12 +127,3 @@ $(document).ready(function() {
 	
 	$radios.filter(':checked').eq(0).click();
 });
-
-window.onload = function() {
- /* setInterval(function() {
-    var hashVal = window.location.hash.substr(1);
-    document.body.style.backgroundColor = hashVal;
-  }, 1000);*/
-	parent.window.location.hash = "speedUp";
-
-}
