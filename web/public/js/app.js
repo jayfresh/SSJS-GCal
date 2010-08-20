@@ -55,8 +55,6 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-	parent.window.location.hash = "speedUp";
-
 	$('.onlyjs').css('visibility', 'visible');
 	
 	/* interaction between big booking button, label and the radio buttons */
