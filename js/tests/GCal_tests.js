@@ -7,8 +7,9 @@ jsunity_0_6.js
 GCal.test_data = {
 	newEvent: {
 		options: {
+			accountName: "supermum1",
 			sessionToken: "CKDwn_KyHxCIpNP9AxjC-JGcBw",
-			calendarID: "default",
+			calendarID: "viewings",
 			title: "title",
 			description: "description",
 			where: "my location",

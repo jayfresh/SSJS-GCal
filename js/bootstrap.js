@@ -14,10 +14,13 @@ system.use("com.joyent.Resource");
 system.use("com.google.code.date"); // include datejs lib
 system.use("GCal");
 system.use("SweetSoft");
+system.use("SS_notification");
 system.use("recaptcha");
+/* TESTS */
 system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
-system.use("tests.SweetSoft_tests");
+//system.use("tests.SweetSoft_tests");
+system.use("tests.SS_notification_tests");
 
 /* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT - this time fix ONLY works for this case where we are 1 hour out */
 Date.prototype.old_getHours = Date.prototype.getHours;
@@ -72,7 +75,9 @@ GET('/tests', function() {
 		//GCal.tests.getEventsByTime,
 		//SweetSoft.tests.createAppointment,
 		//SweetSoft.tests.init,
-		SweetSoft.tests.listFreeSlots
+		//SweetSoft.tests.listFreeSlots,
+		SS_notification_tests.admin,
+		SS_notification_tests.notification
 	);
 	out += "<p>"+objToString(Log)+"</p>";
 	return out;

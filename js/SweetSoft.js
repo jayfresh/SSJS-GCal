@@ -8,7 +8,11 @@ requires:
 system.use("com.google.code.date");
 system.use("com.joyent.Resource");
 
+SweetSoft.init() needs to be called before calling any methods, as this sets up the accounts.
+
 NB: although event attendees will be emailed an invite, the person whose calendar is being used will not receive a notification. I am using an email notifier on the RSS feed of the calendar to alert me when new events are created. Another option would be to extend this to use an email service - using the person's Gmail would not work as expected since Gmail does not show email that come from your own email address.
+
+SweetSoft.listFreeSlots is hard-coded to only find events within the next week
 
 SweetSoft stores accounts as a "SweetSoftAccount" resource. An account has this structure:
 {
@@ -31,11 +35,13 @@ During config setup, SweetSoft gets the accounts from Gcal and merges the 'calen
 	}
 }
 
+TO-DO: not finding any freetime slots in the future shouldn't produce an error message, but should do something less ugly
+
 TO-DO: write tests for account creation
 
 TO-DO: write the mechanism for editing/saving the admin info
 
-TO-DO: protect the admin system with a password
+TO-DO: protect the admin system with a password / require that you are logged into your Google account to see the admin section
 
 */
 
@@ -191,7 +197,7 @@ GET('/listFreeSlots', function() {
 
 GET('/newSweetSoftAccount', function() {
 	var host = this.request.headers.Host;
-	var query = this.request.query,
+	var query = this.request.body,
 		accountName = query.accountName,
 		url = query.redirect,
 		token = query.token,
@@ -229,8 +235,8 @@ GET('/newSweetSoftAccount', function() {
 	return redirect('/'+url+'?writeSuccess='+writeSuccess);
 });
 
-GET('/deleteSweetSoftAccount', function() {
-	var accountName = this.request.query.accountName;
+POST('/deleteSweetSoftAccount', function() {
+	var accountName = this.request.body.accountName;
 	var url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
 	var removeSuccess = SweetSoft.removeAccount(accountName);
 	return redirect(url);
@@ -240,17 +246,36 @@ GET('/listSweetSoftAccounts', function() {
 	var out = "";
 	var accounts = SweetSoft.listAccounts();
 	out += "<h1>SweetSoft Accounts</h1>";
-	out += "<form action='/deleteSweetSoftAccount' method='GET'><ul>";
-	out += "<ul>";
 	for(var i=0, il=accounts.length, account; i<il; i++) {
 		account = accounts[i];
-		out += "<li>"+account.id+"<input type='radio' name='accountName' value='"+account.id+"' />";
-		out += "<br />"+objToString(account)+"</li>";
+		out += "<h3>account details</h3>";
+		out += objToString(account);
+		out += "<p>notifications when viewing booked:<p>";
+		if(account.notifications && account.notifications.length) {
+			out += "<form action='/deleteNotification' method='POST'>";
+			out += "<ul>";
+			for(var j=0, jl=account.notifications.length, notification; j<jl; j++) {
+				notification = account.notifications[j];
+				out += "<li>"+notification+"<input type='radio' name='url' value='"+notification+"' />"+"</li>";
+			}
+			out += "</ul>";
+			out += "<input type='hidden' name='accountID' value='"+account.id+"' />";
+			out += "<input type='submit' name='submit' value='remove selected notification' />";
+			out += "</form>";
+		} else {
+			out += "<p>none</p>";
+		}
+		out += "<form action='/addNotification' method='POST'>";
+		out += "<input type='text' name='url' size='40' />";
+		out += "<input type='submit' value='add notification' />";
+		out += "<input type='hidden' name='accountID' value='"+account.id+"' />";
+		out += "</form>";
+		out += "<form action='/deleteSweetSoftAccount' method='POST'>";
+		out += "<input type='hidden' name='accountName' value='"+account.id+"' />";
+		out += "<input type='submit' value='remove account' /></form>";
 	}
-	out += "</ul>";
-	out += "<input type='submit' value='remove account' /></form>";
 	out += "<h2>Create a new account</h2>";
-	out += "<form method='GET' action='/newSweetSoftAccount'>" +
+	out += "<form method='POST' action='/newSweetSoftAccount'>" +
 		"<label for='accountName'>account name e.g. supermum1</label>" +
 		"<input type='text' size='40' id='accountName' name='accountName' /><br />" +
 		"<label for='name'>SuperMum name</label>" +
@@ -304,6 +329,7 @@ SweetSoft = {};
 		} catch(e) {
 			throw new Error('Error: SweetSoft.init: '+e.message);
 		}
+		return SweetSoft;
 	};
 	SweetSoft.createAppointment = function(data) {
 		try {
@@ -358,7 +384,20 @@ SweetSoft = {};
 			accountName: data.superMumID,
 			calendarID: config.viewingsCalendarName
 		};
-		return GCal.newEvent(options);
+		var eventObj = GCal.newEvent(options);
+		var eventString = "";
+		for(i in eventObj) {
+			if(eventObj.hasOwnProperty(i)) {
+				eventString += "&"+encodeURIComponent(i)+"="+encodeURIComponent(eventObj[i].toString());
+			}
+		}
+		eventString = eventString.substring(1);
+		if(eventString) {
+			for(var i=0,il=account.notifications.length,notification;i<il;i++) {
+				notification = account.notifications[i];
+				var response = system.http.request("POST",notification,null,eventString);
+			}
+		}
 	};
 	
 	SweetSoft.listFreeSlots = function(options) {
@@ -522,6 +561,18 @@ SweetSoft = {};
 		}
 		return system.datastore.write(SweetSoft.resourceName, account);
 	};
+	SweetSoft.updateAccount = function(accountName, properties) {
+		var account;
+		try {
+			account = system.datastore.get(SweetSoft.resourceName, accountName);
+		} catch(e) {
+			throw new Error("Error: SweetSoft.updateAccount: account not found: "+accountName);
+		}
+		if(properties) {
+			merge(account, properties);
+		}
+		return system.datastore.write(SweetSoft.resourceName, account);
+	};
 	SweetSoft.removeAccount = function(accountName) {
 		if(!accountName) {
 			throw new Error("Error: SweetSoft.deleteAccount: no account name provided");
@@ -587,55 +638,92 @@ SweetSoft = {};
 		]);
 		return config;
 	}
-	
-	/* utils */
-	
-	function verifyOptions(obj, optionsList) {
-		var e, missingOptions = [];
-		if(!obj) {
-			e = new Error();
-			e.message = 'no arguments supplied';
-			throw e;
-		}
-		for(var i=0, il=optionsList.length, option; i<il; i++) {
-			option = optionsList[i];
-			if(!obj[option]) {
-				missingOptions.push(option);
-			}
-		}
-		if(missingOptions.length) {
-			e = new Error();
-			e.message = 'missing options - '+missingOptions.join(", ")+'; object: '+objToString(obj);
-			throw e;
-		}
-		return true;
-	}
-	
-	// templating using "<% ... %>" (expressions) and "<%= ... %>" (values)
-	// adapted from John Resig and Jeremy Ashkenas (MIT License)
-	// http://ejohn.org/blog/javascript-micro-templating/
-	// http://github.com/documentcloud/underscore
-	function string_template(str, data) {
-		/* JRL: changed to support '\n' characters in templates
-			modified first replace function - it was:
-			.replace(/[\r\t\n]/g, " ")
-			and added
-			.replace(/\n/g,"\\n")
-		*/
-		var fn = new Function("obj",
-			"var p=[];" +
-			"with(obj){p.push(\'" +
-			str
-				.replace(/[\r\t]/g, " ")
-				.replace(/\n/g, "\\n")
-				.split("<%").join("\t")
-				.replace(/((^|%>)[^\t]*)'/g, "$1\r")
-				.replace(/\t=(.*?)%>/g, "',$1,'")
-				.split("\t").join("');")
-				.split("%>").join("p.push('")
-				.split("\r").join("\\'") +
-			"');}return p.join('');");
-		return data ? fn(data) : fn;
-	}
 
 })();
+
+/* utils */
+	
+function verifyOptions(obj, optionsList) {
+	var e, missingOptions = [];
+	if(!obj) {
+		e = new Error();
+		e.message = 'no arguments supplied';
+		throw e;
+	}
+	for(var i=0, il=optionsList.length, option; i<il; i++) {
+		option = optionsList[i];
+		if(!obj[option]) {
+			missingOptions.push(option);
+		}
+	}
+	if(missingOptions.length) {
+		e = new Error();
+		e.message = 'missing options - '+missingOptions.join(", ")+'; object: '+objToString(obj);
+		throw e;
+	}
+	return true;
+}
+
+// templating using "<% ... %>" (expressions) and "<%= ... %>" (values)
+// adapted from John Resig and Jeremy Ashkenas (MIT License)
+// http://ejohn.org/blog/javascript-micro-templating/
+// http://github.com/documentcloud/underscore
+function string_template(str, data) {
+	/* JRL: changed to support '\n' characters in templates
+		modified first replace function - it was:
+		.replace(/[\r\t\n]/g, " ")
+		and added
+		.replace(/\n/g,"\\n")
+	*/
+	var fn = new Function("obj",
+		"var p=[];" +
+		"with(obj){p.push(\'" +
+		str
+			.replace(/[\r\t]/g, " ")
+			.replace(/\n/g, "\\n")
+			.split("<%").join("\t")
+			.replace(/((^|%>)[^\t]*)'/g, "$1\r")
+			.replace(/\t=(.*?)%>/g, "',$1,'")
+			.split("\t").join("');")
+			.split("%>").join("p.push('")
+			.split("\r").join("\\'") +
+		"');}return p.join('');");
+	return data ? fn(data) : fn;
+}
+
+function pushUnique(arr, i) {
+	if(arr.indexOf(i)===-1) {
+		arr.push(i);
+		return arr.length;
+	} else {
+		return false;
+	}
+}
+
+function merge(obj1, obj2) {
+	for(var i in obj2) {
+		if(obj2.hasOwnProperty(i)) {
+			obj1[i] = obj2[i];
+		}
+	}
+}
+
+doLog = function(obj) {
+	if(typeof obj === "string") {
+		obj = {
+			obj: obj
+		};
+	}
+	obj.id = Math.floor(Math.random()*100);
+	return system.datastore.write("log", obj);
+};
+GET('/listLog', function() {
+	var logs = system.datastore.search("log", {});
+	var out = "";
+	for(var i=0, il=logs.length, log; i<il; i++) {
+		log = logs[i];
+		out += "<h2>"+log.id+"</h2>";
+		out += objToString(log);
+	}
+	return out;
+});

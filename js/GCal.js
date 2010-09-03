@@ -165,7 +165,7 @@ var GCal = {};
 		var account = GCal.getAccount(options.accountName);
 		var calendar = account.calendars[calendarID];
 		if(!calendar) {
-			throw new Error("Error: GCal.newEvent: account "+accountName+" does not contain calendar "+calendarID);
+			throw new Error("Error: GCal.newEvent: account "+options.accountName+" does not contain calendar "+calendarID);
 		}
 		var event = {
 			title: options.title,
@@ -211,7 +211,6 @@ var GCal = {};
 			startMin: startMin,
 			startMax: startMax
 		});
-		Log['events'] = objToString(response);
 		var eventsXML = makeXML(response);
 		var atom = Namespace('http://www.w3.org/2005/Atom');
 		var gd = Namespace('http://schemas.google.com/g/2005');
@@ -365,7 +364,7 @@ var GCal = {};
 	/* utilities */
 	
 	function makeXML(response) {
-		var feedXML = response.content.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // bug 336551
+		var feedXML = response.content.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // E4X bug 336551
 		var xml = new XML(feedXML);
 		return xml;
 	}

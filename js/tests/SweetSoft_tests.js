@@ -60,7 +60,7 @@ SweetSoft.test_data = {
 			superMumID: "supermum1",
 			property: "53 Kenilworth Avenue",
 			date: "2010-05-05",
-			start_time: "12:00",
+			start_time: "2010-05-05T12:00:00.000Z",
 			student_name: "Bob-a-job",
 			student_email: "bob@job.com",
 			student_phone: "0789",
@@ -71,14 +71,14 @@ SweetSoft.test_data = {
 		},
 		options_to_use: {
 			title: "Viewing for 53 Kenilworth Avenue",
-			description: "Hello Bob-a-job, \n\nYour booking for 53 Kenilworth Avenue is on 2010-05-05 at 12:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
+			description: "Hello Bob-a-job, \n\nYour booking for 53 Kenilworth Avenue is on 5/5/2010 at 13:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
 			where: "53 Kenilworth Avenue",
 			startTime: (function() {
-				var d = new Date("Wed May 05 2010 12:00:00 GMT+0100 (BST)");
+				var d = new Date("Wed May 05 2010 13:00:00 GMT+0100 (BST)");
 				return d.toISOString();
 			})(),
 			endTime: (function() {
-				var d = new Date("Wed May 05 2010 12:30:00 GMT+0100 (BST)");
+				var d = new Date("Wed May 05 2010 13:00:00 GMT+0100 (BST)");
 				d.add(30).minutes(); /* JRL: based on default slot length being 30 minutes */
 				return d.toISOString();
 			})(), /* function being used here to that _orient is set on endTime object */
@@ -96,8 +96,8 @@ SweetSoft.test_data = {
 				name: "philip@larkin.com",
 				email: "philip@larkin.com"
 			}],
-			accountID: "jnthnlstr@googlemail.com",
-			calendarName: "viewings"
+			accountName: "supermum1",
+			calendarID: "viewings"
 		}
 	},
 	listFreeSlots: {
@@ -311,6 +311,7 @@ SweetSoft.tests = {
 				return SweetSoft.test_data.init.SweetSoftAccounts;
 			};
 			SweetSoft.init();
+			// TO-DO: restore the mocked functions here!
 			assertException(function() { SweetSoft.listFreeSlots({
 				accountID: accountID
 			}) });
