@@ -104,6 +104,9 @@ SS_notification_tests = {
 			SweetSoft.createAppointment(form_data);
 			assertEqual(called_count, expected_called.length);
 			system.http.request = old_http;
+		},
+		'test - when I book a viewing, these variables should be POSTed: the event XML as "content", the email address of the person who booked the viewings as "booked_by", and the property address as "address"', function() {
+			fail();
 		}
 	}
 };
