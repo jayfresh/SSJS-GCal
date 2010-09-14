@@ -733,8 +733,6 @@ function doLog(obj) {
 
 GET('/listLog', function() {
 	var logs = system.datastore.search("log", {});
-	return "hello!";
-	return logs.length;
 	var out = "";
 	for(var i=0, il=logs.length, log; i<il; i++) {
 		log = logs[i];
