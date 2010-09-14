@@ -399,6 +399,10 @@ SweetSoft = {};
 				notification = account.notifications[i];
 				try {
 					response = system.http.request("POST",notification,null,eventString);
+					doLog({
+						response: response,
+						eventString: eventString
+					});
 				} catch(ex) {
 					doLog({
 						error: 'error sending to '+notification+', number '+i+' of '+il,
