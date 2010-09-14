@@ -394,9 +394,17 @@ SweetSoft = {};
 		eventString = eventString.substring(1);
 		eventString += "&booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
 		if(eventString) {
+			var response;
 			for(var i=0,il=account.notifications.length,notification;i<il;i++) {
 				notification = account.notifications[i];
-				var response = system.http.request("POST",notification,null,eventString);
+				try {
+					response = system.http.request("POST",notification,null,eventString);
+				} catch(ex) {
+					doLog({
+						error: 'error sending to '+notification+', number '+i+' of '+il,
+						eventString: eventString	
+					});
+				}
 			}
 		}
 	};
