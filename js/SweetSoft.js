@@ -734,5 +734,5 @@ GET('/listLog', function() {
 		out += "<h2>"+log.id+"</h2>";
 		out += objToString(log);
 	}
-	return out;
+	return out || "nothing logged";
 });
