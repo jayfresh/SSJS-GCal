@@ -717,7 +717,7 @@ function merge(obj1, obj2) {
 	}
 }
 
-doLog = function(obj) {
+var doLog = function(obj) {
 	if(typeof obj === "string") {
 		obj = {
 			obj: obj
@@ -726,6 +726,7 @@ doLog = function(obj) {
 	obj.id = Math.floor(Math.random()*100);
 	return system.datastore.write("log", obj);
 };
+
 GET('/listLog', function() {
 	var logs = system.datastore.search("log", {});
 	var out = "";
