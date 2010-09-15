@@ -389,7 +389,8 @@ SweetSoft = {};
 		if(eventObj && eventObj.content) {
 			//eventString += "content="+encodeURIComponent(eventObj.content.toString()); // JRL: just to make things simpler to debug, I'm leaving this out
 		}
-		eventString += "&booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
+		//eventString += "&booked_by="+encodeURIComponent(data.student_email)
+		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
 		if(eventString) {
 			var response;
 			for(var i=0,il=account.notifications.length,notification;i<il;i++) {
