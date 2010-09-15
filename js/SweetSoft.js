@@ -726,7 +726,7 @@ function doLog(obj) {
 			obj: obj
 		};
 	}
-	obj.id = (new Date).toString();
+	obj.id = (new Date).toString() +" "+Math.floor(Math.random()*100);
 	return system.datastore.write("log", obj);
 }
 
