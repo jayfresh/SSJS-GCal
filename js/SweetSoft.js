@@ -757,7 +757,7 @@ GET('/listLog', function() {
 	for(var i=0, il=logs.length, log; i<il; i++) {
 		log = logs[i];
 		out += "<h2>"+log.id+"</h2>";
-		out += objToString(log);
+		out += listLogObjToString(log);
 	}
 	return out || "nothing logged";
 });
