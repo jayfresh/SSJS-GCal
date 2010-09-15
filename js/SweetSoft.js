@@ -392,10 +392,11 @@ SweetSoft = {};
 		//eventString += "&booked_by="+encodeURIComponent(data.student_email)
 		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
 		if(eventString) {
-			var response;
+			var response, headers;
 			for(var i=0,il=account.notifications.length,notification;i<il;i++) {
 				notification = account.notifications[i];
 				try {
+					headers = ["Content-Type", "application/x-www-form-urlencoded"];
 					response = system.http.request("POST",notification,null,eventString);
 					doLog({
 						notification: notification,
