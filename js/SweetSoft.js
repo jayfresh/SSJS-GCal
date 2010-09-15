@@ -400,11 +400,13 @@ SweetSoft = {};
 				try {
 					response = system.http.request("POST",notification,null,eventString);
 					doLog({
-						response: response,
+						notification: notification,
+						response: objToString(response),
 						eventString: eventString
 					});
 				} catch(ex) {
 					doLog({
+						notification: notification,
 						error: 'error sending to '+notification+', number '+i+' of '+il,
 						eventString: eventString	
 					});
@@ -727,8 +729,26 @@ function doLog(obj) {
 			obj: obj
 		};
 	}
-	obj.id = Math.floor(Math.random()*100);
+	obj.id = (new Date).toString();
 	return system.datastore.write("log", obj);
+}
+
+function listLogObjToString(obj) {
+	var out = ""
+	for(var i in obj) {
+		if(obj.hasOwnProperty(i)) {
+			if(typeof obj[i] === "object") {
+				if(obj[i] instanceof Array) {
+					out += obj[i].toString() + '\n';
+				} else {
+					out += listLogObjToString(obj[i]) + '\n';
+				}
+			} else {
+				out += obj[i].toString() + '\n';
+			}
+		}
+	}
+	return out;
 }
 
 GET('/listLog', function() {
