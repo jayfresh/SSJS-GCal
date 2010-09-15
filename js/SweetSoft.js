@@ -386,12 +386,9 @@ SweetSoft = {};
 		};
 		var eventObj = GCal.newEvent(options);
 		var eventString = "";
-		for(i in eventObj) {
-			if(eventObj.hasOwnProperty(i)) {
-				eventString += "&"+encodeURIComponent(i)+"="+encodeURIComponent(eventObj[i].toString());
-			}
+		if(eventObj && eventObj.content) {
+			eventString += "content="+encodeURIComponent(eventObj.content.toString());
 		}
-		eventString = eventString.substring(1);
 		eventString += "&booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
 		if(eventString) {
 			var response;
