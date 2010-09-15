@@ -397,7 +397,7 @@ SweetSoft = {};
 				notification = account.notifications[i];
 				try {
 					headers = ["Content-Type", "application/x-www-form-urlencoded"];
-					response = system.http.request("POST",notification,null,eventString);
+					response = system.http.request("POST",notification,headers,eventString);
 					doLog({
 						notification: notification,
 						response: objToString(response),
