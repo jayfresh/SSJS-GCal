@@ -387,7 +387,7 @@ SweetSoft = {};
 		var eventObj = GCal.newEvent(options);
 		var eventString = "";
 		if(eventObj && eventObj.content) {
-			eventString += "content="+encodeURIComponent(eventObj.content.toString());
+			//eventString += "content="+encodeURIComponent(eventObj.content.toString()); // JRL: just to make things simpler to debug, I'm leaving this out
 		}
 		eventString += "&booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date);
 		if(eventString) {
