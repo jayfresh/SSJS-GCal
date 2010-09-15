@@ -739,12 +739,12 @@ function listLogObjToString(obj) {
 		if(obj.hasOwnProperty(i)) {
 			if(typeof obj[i] === "object") {
 				if(obj[i] instanceof Array) {
-					out += "i: "+obj[i]+'\n';
+					out += i+": "+obj[i]+'\n';
 				} else {
-					out += "i:\n"+listLogObjToString(obj[i])+'\n';
+					out += i+":\n"+listLogObjToString(obj[i])+'\n';
 				}
 			} else {
-				out += "i:"+obj[i]+'\n';
+				out += i+":"+obj[i]+'\n';
 			}
 		}
 	}
