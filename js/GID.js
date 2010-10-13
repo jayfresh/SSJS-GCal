@@ -30,7 +30,7 @@ GET('/login', function() {
 	// now, redirect to login page
 	var params = {
 		"openid.ns": "http://specs.openid.net/auth/2.0",
-		"openid.return_to": "http://www.postbin.org/11twlhp",
+		"openid.return_to": "http://"+host+"/checkauth",
 		"openid.mode": "checkid_setup",
 		"openid.claimed_id": "http://specs.openid.net/auth/2.0/identifier_select",
 		"openid.identity": "http://specs.openid.net/auth/2.0/identifier_select",
