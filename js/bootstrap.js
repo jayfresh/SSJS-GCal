@@ -13,6 +13,7 @@ system.use("com.joyent.Sammy");
 system.use("com.joyent.Resource");
 system.use("com.google.code.date"); // include datejs lib
 system.use("GCal");
+system.use("GID");
 system.use("SweetSoft");
 system.use("SS_notification");
 system.use("recaptcha");
