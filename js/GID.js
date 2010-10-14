@@ -63,7 +63,7 @@ GET('/checkauth', function() {
 	// check auth is OK
 	var q = this.request.query,
 		host = this.request.headers.Host,
-		mode = q.query['openid.mode'];
+		mode = q['openid.mode'];
 	if(mode==='id_res') {
 		// grab id and email from response params
 		var id = q['openid.identity'],
@@ -72,17 +72,14 @@ GET('/checkauth', function() {
 		var account = GID.getAccount(email);
 		if(!account) {
 			var accountObj = {
+				id: email,
 				gid: id
 			};
 			account = GID.storeNewAcount(email, accountObj);
 		}
 		// redirect to /admin keeping login creds in URL
 		var url = "http://"+host+"/admin";
-		var params = {
-			email: email,
-			gid: id
-		};
-		return redirect(url+'?'+objToParamString(params));
+		return redirect(url+'?'+objToParamString(accountObj));
 	} else {
 		return "error with Google authentication! openid.mode: "+id_res;
 	}
