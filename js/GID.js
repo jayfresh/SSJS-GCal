@@ -80,7 +80,7 @@ GET('/checkauth', function() {
 				id: email,
 				gid: id
 			};
-			account = GID.storeNewAcount(email, accountObj);
+			account = GID.storeNewAccount(email, accountObj);
 		}
 		// redirect to /admin keeping login creds in URL
 		var url = "http://"+host+"/admin";
