@@ -83,8 +83,9 @@ GET('/checkauth', function() {
 			account = GID.storeNewAccount(email, accountObj);
 		}
 		// redirect to /admin keeping login creds in session
-		this.session.id = email;
+		this.session.email = email;
 		this.session.gid = id;
+		this.session.save();
 		var url = "http://"+host+"/admin";
 		return redirect(url);
 	} else {
