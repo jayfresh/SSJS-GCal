@@ -17,6 +17,8 @@ system.use("GID");
 system.use("SweetSoft");
 system.use("SS_notification");
 system.use("recaptcha");
+
+enable('Sessions');
 /* TESTS */
 //system.use("jsunity_0_6");
 //system.use("tests.GCal_tests");
@@ -85,6 +87,7 @@ var Log = {};
 });*/
 
 GET('/admin', function() {
+	return objToString(this.session);
 	return redirect('/listSweetSoftAccounts');
 });
 

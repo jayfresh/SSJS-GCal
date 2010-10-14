@@ -82,9 +82,11 @@ GET('/checkauth', function() {
 			};
 			account = GID.storeNewAccount(email, accountObj);
 		}
-		// redirect to /admin keeping login creds in URL
+		// redirect to /admin keeping login creds in session
+		this.session.id = email;
+		this.session.gid = id;
 		var url = "http://"+host+"/admin";
-		return redirect(url+'?'+objToParamString(accountObj));
+		return redirect(url);
 	} else {
 		return "error with Google authentication! openid.mode: "+id_res;
 	}
