@@ -69,7 +69,12 @@ GET('/checkauth', function() {
 		var id = q['openid.identity'],
 			email = q['openid.ext1.value.email'];
 		// check to see if this account already exists - if not, create it
-		var account = GID.getAccount(email);
+		var account;
+		try {
+			account = GID.getAccount(email);
+		} catch(ex) {
+			// do nothing
+		}
 		if(!account) {
 			var accountObj = {
 				id: email,
