@@ -39,28 +39,111 @@ GET('/login', function() {
 		"openid.ax.required": "email",
 		"openid.ax.type.email": "http://axschema.org/contact/email"
 	};
-	var objToString = function(obj) {
-		var out = "";
-		for(var i in obj) {
-			if(obj.hasOwnProperty(i)) {
-				out += "&"+i+"="+encodeURIComponent(obj[i]);
-			}
-		}
-		return out.substring(1);
-	};
-	return redirect(uri+'?'+objToString(params));
+	return redirect(uri+'?'+objToParamString(params));
 });
+
+/* example response:
+openid.ns=http://specs.openid.net/auth/2.0
+&openid.mode=id_res
+&openid.op_endpoint=https://www.google.com/accounts/o8/ud
+&openid.response_nonce=2010-10-13T16:34:03Z2nxLo_g2fa9_ag
+&openid.return_to=http://sweetsoft.joshuabradley.co.uk/checkauth
+&openid.assoc_handle=AOQobUeHquhqrDXAOH-qfcQlREktVXICa781U-Em-NjcE8IQ7k47oxo-
+&openid.signed=op_endpoint,claimed_id,identity,return_to,response_nonce,assoc_handle,ns.ext1,ext1.mode,ext1.type.email,ext1.value.email
+&openid.sig=9GQpWGkFOgProMjVb2bILLczxs4%3D
+&openid.identity=https://www.google.com/accounts/o8/id%3Fid%3DAItOawn2dcFZ_TxaWtzqFC6JuTFbhOZ6SDRnM50
+&openid.claimed_id=https://www.google.com/accounts/o8/id%3Fid%3DAItOawn2dcFZ_TxaWtzqFC6JuTFbhOZ6SDRnM50
+&openid.ns.ext1=http://openid.net/srv/ax/1.0
+&openid.ext1.mode=fetch_response
+&openid.ext1.type.email=http://axschema.org/contact/email
+&openid.ext1.value.email=jnthnlstr%40gmail.com
+*/
 
 GET('/checkauth', function() {
 	// check auth is OK
-	var host = this.request.headers.Host,
-		mode = this.request.query['openid.mode'];
+	var q = this.request.query,
+		host = this.request.headers.Host,
+		mode = q.query['openid.mode'];
 	if(mode==='id_res') {
 		// grab id and email from response params
-		var url = host+"/admin";
-		return this.request.query;
-		return redirect(url);
+		var id = q['openid.identity'],
+			email = q['openid.ext1.value.email'];
+		// check to see if this account already exists - if not, create it
+		var account = GID.getAccount(email);
+		if(!account) {
+			var accountObj = {
+				gid: id
+			};
+			account = GID.storeNewAcount(email, accountObj);
+		}
+		// redirect to /admin keeping login creds in URL
+		var url = "http://"+host+"/admin";
+		var params = {
+			email: email,
+			gid: id
+		};
+		return redirect(url+'?'+objToParamString(params));
 	} else {
-		return "error!";
+		return "error with Google authentication! openid.mode: "+id_res;
 	}
 });
+
+GET('/listGIDAccounts', function() {
+	var accounts = GID.listAccounts(),
+		out = "";
+	out += "<h1>GID Accounts</h1>";
+	if(accounts.length) {
+		out += "<ul>";
+		for(var i=0, il=accounts.length, account, calendars, calendarNames; i<il; i++) {
+			account = accounts[i];
+			out += "<li>"+account.id;
+			out += "<br />gid: "+account.gid+"</li>";
+		}
+		out += "</ul>";
+	} else {
+		out += "<p>no GID accounts</p>";
+	}
+	return out;
+});
+
+var GID = {};
+
+GID.resourceName = "GIDAccount";
+GID.storeNewAccount = function(accountName, account) {
+	if(!accountName) {
+		throw new Error("Error: GID.storeNewAccount: no account name provided");
+	}
+	if(account.gid) {
+		account.id = accountName;
+		return system.datastore.write(GID.resourceName, account);
+	} else {
+		throw new Error("Error: GID.storeNewAccount: no GID provided for account");
+	}
+};
+GID.getAccount = function(accountName) {
+	if(!accountName) {
+		throw new Error("Error: GID.getAccount: no account name provided");
+	}
+	return system.datastore.get(GID.resourceName, accountName);
+};
+GID.removeAccount = function(accountName) {
+	if(!accountName) {
+		throw new Error("Error: GID.deleteAccount: no account name provided");
+	}
+	return system.datastore.remove(GID.resourceName, accountName);
+};
+GID.listAccounts = function() {
+	var accounts = system.datastore.search(GID.resourceName, {});
+	return accounts;
+};
+
+/* utils */
+function objToParamString(obj) {
+	var out = "";
+	for(var i in obj) {
+		if(obj.hasOwnProperty(i)) {
+			out += "&"+i+"="+encodeURIComponent(obj[i]);
+		}
+	}
+	return out.substring(1);
+};
