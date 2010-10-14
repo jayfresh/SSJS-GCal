@@ -39,6 +39,8 @@ TO-DO: not finding any freetime slots in the future shouldn't produce an error m
 
 TO-DO: write tests for account creation
 
+TO-DO: write tests for checking whether you are logged-in and have the appropriate ID for admin functions
+
 TO-DO: write the mechanism for editing/saving the admin info
 
 */

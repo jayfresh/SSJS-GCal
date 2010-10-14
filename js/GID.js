@@ -1,9 +1,15 @@
-function makeXML(response) {
-	var feedXML = response.content.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // E4X bug 336551
-	var xml = new XML(feedXML);
-	return xml;
-}
-/*
+/* this component should:
+
+- provide /login to start login process with Google OpenID
+- provide /checkauth to handle response and set session variables if logged-in
+
+Make sure enable('Sessions'); has been called somewhere e.g. bootstrap.js.
+
+TO-DO: write tests for /login and /checkauth
+
+*/
+
+/* example XRDS file:
 <xrds:XRDS xmlns:xrds="xri://$xrds" xmlns="xri://$xrd*($v*2.0)"> 
   <XRD> 
     <Service priority="0"> 
@@ -143,6 +149,12 @@ GID.listAccounts = function() {
 };
 
 /* utils */
+function makeXML(response) {
+	var feedXML = response.content.replace(/^<\?xml\s+version\s*=\s*(["'])[^\1]+\1[^?]*\?>/, ""); // E4X bug 336551
+	var xml = new XML(feedXML);
+	return xml;
+}
+
 function is_logged_in(session, id) {
 	var e;
 	if(!session.gid) {
