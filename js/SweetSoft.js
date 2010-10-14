@@ -41,9 +41,9 @@ TO-DO: write tests for account creation
 
 TO-DO: write the mechanism for editing/saving the admin info
 
-TO-DO: protect the admin system with a password / require that you are logged into your Google account to see the admin section
-
 */
+
+/* BOOKING */
 
 POST('/createAppointment', function() {
 	var query = this.request.body,
@@ -195,10 +195,17 @@ GET('/listFreeSlots', function() {
 	return objToString(dayList);
 });
 
+/* ADMIN */
+
 GET('/newSweetSoftAccount', function() {
+	try {
+		is_logged_in(this.session);
+	} catch(ex) {
+		return redirect('/login');
+	}
 	var host = this.request.headers.Host;
-	var query = this.request.body,
-		accountName = query.accountName,
+	var query = this.request.query,
+		accountName = this.session.email,
 		url = query.redirect,
 		token = query.token,
 		name = query.name,
@@ -237,12 +244,26 @@ GET('/newSweetSoftAccount', function() {
 
 POST('/deleteSweetSoftAccount', function() {
 	var accountName = this.request.body.accountName;
+	try {
+		is_logged_in(this.session, accountName);
+	} catch(ex) {
+		if(ex.type==='login') {
+			return redirect('/login');
+		} else {
+			return "you can't do that with this account: "+this.session.email;
+		}
+	}
 	var url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
 	var removeSuccess = SweetSoft.removeAccount(accountName);
 	return redirect(url);
 });
 
 GET('/listSweetSoftAccounts', function() {
+	try {
+		is_logged_in(this.session);
+	} catch(ex) {
+		return redirect('/login');
+	}
 	var out = "";
 	var accounts = SweetSoft.listAccounts();
 	out += "<h1>SweetSoft Accounts</h1>";
@@ -275,9 +296,8 @@ GET('/listSweetSoftAccounts', function() {
 		out += "<input type='submit' value='remove account' /></form>";
 	}
 	out += "<h2>Create a new account</h2>";
-	out += "<form method='POST' action='/newSweetSoftAccount'>" +
-		"<label for='accountName'>account name e.g. supermum1</label>" +
-		"<input type='text' size='40' id='accountName' name='accountName' /><br />" +
+	out += "<form method='GET' action='/newSweetSoftAccount'>" +
+		"<p>The account name will be: "+this.session.email+"</p>" +
 		"<label for='name'>SuperMum name</label>" +
 		"<input type='text' size='40' id='name' name='name' /><br />" +
 		"<label for='phone'>SuperMum phone number</label>" +

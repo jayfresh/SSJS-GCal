@@ -143,6 +143,22 @@ GID.listAccounts = function() {
 };
 
 /* utils */
+function is_logged_in(session, id) {
+	var e;
+	if(!session.gid) {
+		e = new Error();
+		e.type = 'login';
+		e.message = 'not logged in';
+	} else if(id && session.email!==id) {
+		e = new Error();
+		e.type = 'id';
+		e.message = 'bad login id';
+	}
+	if(e) {
+		throw e;
+	}
+}
+
 function objToParamString(obj) {
 	var out = "";
 	for(var i in obj) {

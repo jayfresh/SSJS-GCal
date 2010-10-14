@@ -87,7 +87,11 @@ var Log = {};
 });*/
 
 GET('/admin', function() {
-	return objToString(this.session);
+	try {
+		is_logged_in(this.session);
+	} catch(ex) {
+		return 'admin says is not logged in: '+objToString(this.session);
+	}
 	return redirect('/listSweetSoftAccounts');
 });
 

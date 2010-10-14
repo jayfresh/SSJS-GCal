@@ -48,6 +48,11 @@ GET('/session', function() {
 });
 
 GET('/newGCalAccount', function() {
+	try {
+		is_logged_in(this.session);
+	} catch(ex) {
+		return redirect('/login');
+	}
 	var query = this.request.query,
 		accountName = query.accountName,
 		sessionToken = query.sessionToken,
@@ -59,12 +64,26 @@ GET('/newGCalAccount', function() {
 
 GET('/deleteGCalAccount', function() {
 	var accountName = this.request.query.accountName;
+	try {
+		is_logged_in(this.session, accountName);
+	} catch(ex) {
+		if(ex.type==='login') {
+			return redirect('/login');
+		} else {
+			return "you can't do that with this account: "+this.session.email;
+		}
+	}
 	var url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
 	var removeSuccess = GCal.removeAccount(accountName);
 	return redirect(url);
 });
 
 GET('/listGCalAccounts', function() {
+	try {
+		is_logged_in(this.session);
+	} catch(ex) {
+		return redirect('/login');
+	}
 	var accounts = GCal.listAccounts();
 	var out = "";
 	out += "<h1>GCal Accounts</h1>";

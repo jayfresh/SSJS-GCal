@@ -10,6 +10,15 @@ POST('/addNotification', function() {
 	var query = this.request.body;
 	var url = query.url,
 		accountID = query.accountID;
+	try {
+		is_logged_in(this.session, accountID);
+	} catch(ex) {
+		if(ex.type==='login') {
+			return redirect('/login');
+		} else {
+			return "you can't do that with this account: "+this.session.email;
+		}
+	}
 	SweetSoft.init();
 	var response = SweetSoft.addNotification(accountID, url);
 	var redirect_url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
@@ -20,6 +29,15 @@ POST('/deleteNotification', function() {
 	var query = this.request.body;
 	var url = query.url,
 		accountID = query.accountID;
+	try {
+		is_logged_in(this.session, accountID);
+	} catch(ex) {
+		if(ex.type==='login') {
+			return redirect('/login');
+		} else {
+			return "you can't do that with this account: "+this.session.email;
+		}
+	}
 	SweetSoft.init();
 	var response = SweetSoft.deleteNotification(accountID, url);
 	var redirect_url = this.request.headers['Referer'] || 'http://'+this.request.headers.Host+'/';
