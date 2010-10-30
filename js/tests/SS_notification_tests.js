@@ -105,7 +105,7 @@ SS_notification_tests = {
 			assertEqual(called_count, expected_called.length);
 			system.http.request = old_http;
 		},
-		'test - when I book a viewing, these variables should be POSTed: the event XML as "content", the email address of the person who booked the viewings as "booked_by", their name as "booked_by_name", the property address as "address" and the booking datetime as "booking_datetime"': function() {
+		'test - when I book a viewing, these variables should be POSTed: the event XML as "content", the email address of the person who booked the viewings as "booked_by", their name as "booked_by_name", their phone number as "booked_by_phone", the property address as "address" and the booking datetime as "booking_datetime"': function() {
 			fail();
 		}
 	}
