@@ -423,13 +423,29 @@ SweetSoft = {};
 					doLog({
 						notification: notification,
 						response: objToString(response),
+						headers: objToString(response.headers),
 						eventString: eventString
 					});
+					if(response.content.indexOf('500 DNS lookup timeout')!==-1) {
+						// do it again, hoping the 500 will be fixed
+						response = system.http.request("POST",notification,headers,eventString);
+						doLog({
+							error: 'after 500 DNS lookup timeout, repeating notification to '+notification,
+							notification: notification,
+							response: objToString(response),
+							headers: objToString(response.headers),
+							eventString: eventString
+						});
+						if(response.content.indexOf('500 DNS lookup timeout')!==-1) {
+							throw new Error("two '500 DNS lookup timeout' in a row for "+notification);
+						}
+					}
 				} catch(ex) {
 					doLog({
 						notification: notification,
 						error: 'error sending to '+notification+', number '+i+' of '+il,
-						eventString: eventString	
+						eventString: eventString,
+						ex: objToString(ex)	
 					});
 				}
 			}
