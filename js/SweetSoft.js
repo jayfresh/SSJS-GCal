@@ -437,16 +437,24 @@ SweetSoft = {};
 							eventString: eventString
 						});
 						if(response.content.indexOf('500 DNS lookup timeout')!==-1) {
+							doLog({
+								error: "two '500 DNS lookup timeout' in a row for "+notification,
+								notification: notification,
+								response: objToString(response),
+								headers: objToString(response.headers),
+								eventString: eventString
+							});	
 							throw new Error("two '500 DNS lookup timeout' in a row for "+notification);
 						}
 					}
 				} catch(ex) {
 					doLog({
 						notification: notification,
-						error: 'error sending to '+notification+', number '+i+' of '+il,
+						error: 'error sending to '+notification+', number '+(i+1)+' of '+il,
 						eventString: eventString,
 						ex: objToString(ex)	
 					});
+					throw ex;
 				}
 			}
 		}

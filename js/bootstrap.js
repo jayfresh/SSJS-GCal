@@ -25,12 +25,45 @@ enable('Sessions');
 //system.use("tests.SweetSoft_tests");
 //system.use("tests.SS_notification_tests");
 
-/* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT - this time fix ONLY works for this case where we are 1 hour out */
+/* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT - this time fix ONLY works for this case where we are 1 hour out
+
+2010	Sunday, 28 March, 01:00	->	Sunday, 31 October, 02:00
+2011	Sunday, 27 March, 01:00	->	Sunday, 30 October, 02:00
+2012	Sunday, 25 March, 01:00	->	Sunday, 28 October, 02:00
+*/
 Date.prototype.old_getHours = Date.prototype.getHours;
 Date.prototype.getHours = function() {
-	var offset = 0;
-	if(this.getTimezoneOffset()===0) {
-		offset = 1;
+	var offset = 0,
+		timezoneOffset = this.getTimezoneOffset();
+	if(timezoneOffset===0) {
+		var now = this.getTime(),
+			year = this.getFullYear(),
+			startDST,
+			endDST;
+		if(year===2010) {
+			startDST = new Date("March 28, 2010 01:00:00").getTime();
+			endDST = new Date("October 31, 2010 01:00:00").getTime();
+			if(now>=startDST && now<endDST) {
+				offset = 1;
+			}
+		} else if(year===2011) {
+			startDST = new Date("March 27, 2011 01:00:00").getTime();
+			endDST = new Date("October 30, 2011 01:00:00").getTime();
+			if(now>=startDST && now<endDST) {
+				offset = 1;
+			}
+		} else if(year===2012) {
+			startDST = new Date("March 25, 2012 01:00:00").getTime();
+			endDST = new Date("October 28, 2012 01:00:00").getTime();
+			if(now>=startDST && now<endDST) {
+				offset = 1;
+			}
+		} else {
+			// panic! I mean, upgrade
+			throw new Error("upgrade the booking system to support daylight saving time for years past 2012");
+		}
+	} else {
+		throw new Error("the booking system seems to have moved out of a GMT timezone, please upgrade to support the new timezone (offset "+timezoneOffset+")");
 	}
 	return this.old_getHours.apply(this,arguments) + offset;
 };
