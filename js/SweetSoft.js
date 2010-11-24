@@ -529,7 +529,7 @@ SweetSoft = {};
 			}
 			return start;
 		}
-		var startTracker = new Date.now().clearTime().add(1).day(),
+		var startTracker = new Date.now().clearTime().add(2).day(), // I think this is where the time between now and the earliest bookable slot is set
 			freeSlotEndTracker,
 			endTracker,
 			dayTracker,
