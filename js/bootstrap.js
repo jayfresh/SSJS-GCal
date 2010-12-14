@@ -123,7 +123,7 @@ GET('/admin', function() {
 	try {
 		is_logged_in(this.session);
 	} catch(ex) {
-		return 'admin says is not logged in: '+objToString(this.session);
+		return 'admin says is not logged in: '+objToString(this.session)+'<p>go to <a href="/login">login</a></p>';
 	}
 	return redirect('/listSweetSoftAccounts');
 });

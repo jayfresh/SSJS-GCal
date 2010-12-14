@@ -53,7 +53,8 @@ POST('/createAppointment', function() {
 			superMumID: query.superMumID,
 			property: query.property,
 			start_time: query.start_time,
-			student_name: query.student_name,
+			first_name: query.first_name,
+			last_name: query.last_name,
 			student_email: query.student_email,
 			student_phone: query.student_phone,
 			attendees: query.attendees
@@ -359,13 +360,15 @@ SweetSoft = {};
 				'superMumID',
 				'property',
 				'start_time',
-				'student_name',
+				'first_name',
+				'last_name',
 				'student_email',
 				'student_phone'
 			]);
 		} catch(e) {
 			throw new Error("Error: SweetSoft.createAppointment: "+e.message);
 		}
+		data.student_name = data.first_name+" "+data.last_name;
 		var config = SweetSoft.config;
 		var account = config.accounts[data.superMumID];
 		if(!account) {
@@ -412,7 +415,7 @@ SweetSoft = {};
 			//eventString += "content="+encodeURIComponent(eventObj.content.toString()); // JRL: just to make things simpler to debug, I'm leaving this out
 		}
 		//eventString += "&booked_by="+encodeURIComponent(data.student_email)
-		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_name="+encodeURIComponent(data.student_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date)+"&booked_by_phone="+encodeURIComponent(data.student_phone);
+		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_first_name="+encodeURIComponent(data.first_name)+"&booked_by_last_name"+encodeURIComponent(data.last_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date)+"&booked_by_phone="+encodeURIComponent(data.student_phone);
 		if(eventString) {
 			var response, headers;
 			for(var i=0,il=account.notifications.length,notification;i<il;i++) {

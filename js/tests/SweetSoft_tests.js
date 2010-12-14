@@ -61,7 +61,8 @@ SweetSoft.test_data = {
 			property: "53 Kenilworth Avenue",
 			date: "2010-05-05",
 			start_time: "2010-05-05T12:00:00.000Z",
-			student_name: "Bob-a-job",
+			first_name: "Bob-a-job",
+			last_name: "Jones",
 			student_email: "bob@job.com",
 			student_phone: "0789",
 			attendees: [
@@ -71,7 +72,7 @@ SweetSoft.test_data = {
 		},
 		options_to_use: {
 			title: "Viewing for 53 Kenilworth Avenue",
-			description: "Hello Bob-a-job, \n\nYour booking for 53 Kenilworth Avenue is on 5/5/2010 at 13:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
+			description: "Hello Bob-a-job Jones, \n\nYour booking for 53 Kenilworth Avenue is on 5/5/2010 at 13:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
 			where: "53 Kenilworth Avenue",
 			startTime: (function() {
 				var d = new Date("Wed May 05 2010 13:00:00 GMT+0100 (BST)");
@@ -85,7 +86,7 @@ SweetSoft.test_data = {
 			organiser_name: "Lady Gaga",
 			organiser_email: "jnthnlstr@googlemail.com",
 			attendees: [{
-				name: "Bob-a-job",
+				name: "Bob-a-job Jones",
 				email: "bob@job.com"
 			},
 			{
@@ -257,7 +258,7 @@ SweetSoft.tests = {
 		'test - it should throw an error if no arguments are supplied': function() {
 			assertException(function() { SweetSoft.createAppointment(); });
 		},
-		'test - it should throw an error if the following are not supplied as properties of an object - superMumID, property, date, start_time, student_name, student_email, student_phone, attendees': function() {
+		'test - it should throw an error if the following are not supplied as properties of an object - superMumID, property, date, start_time, first_name, last_name, student_email, student_phone, attendees': function() {
 			assertException(function() { SweetSoft.createAppointment({}); });
 		},
 		'test - it should take data coming from the SweetSpot property pages and call GCal.newEvent with the options set correctly to create a new event': function(data) {

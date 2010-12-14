@@ -67,8 +67,8 @@
 				</div>
 				<div class="grid6col left marginleft">
 					<div class="grid3col left">
-						<label for="name">Name:</label>
-						<input type="text" name="student_name" id="name" class="required" />
+						<label for="first_name">First name:</label>
+						<input type="text" name="first_name" id="first_name" class="required" />
 						<span class="spacer"></span>
 					</div>
 					<div class="grid3col left marginleft">
@@ -77,6 +77,11 @@
 						<span class="spacer"></span>
 					</div>
 					<div class="grid3col left">
+						<label for="last_name">Last name:</label>
+						<input type="text" name="last_name" id="last_name" class="required" />
+						<span class="spacer"></span>
+					</div>
+					<div class="grid3col left marginleft">
 						<label for="email">Email:</label>
 						<input type="text" name="student_email" id="email" class="required email" />
 						<span class="spacer"></span>
@@ -101,8 +106,8 @@
 							<div class="orange recaptcha_only_if_incorrect_sol">Incorrect. Please try again.</div>
 						</div>
 						<br class="clearboth" />
-						<div class="grid6col">
-							<div class="grid4col">
+						<div class="grid6col right">
+							<div class="grid4col right">
 								<div class="margintopsmall" id="recaptcha_image"></div>
 								<div class="grid2col medtext margintopsmall left">
 									Choose captcha format: <a href="javascript:Recaptcha.switch_type('image');">Image</a> or <a href="javascript:Recaptcha.switch_type('audio');">Audio</a>

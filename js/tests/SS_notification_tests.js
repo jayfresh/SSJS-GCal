@@ -136,7 +136,8 @@ SS_notification_test_data = {
 			property: "53 Kenilworth Avenue",
 			date: "2010-05-05",
 			start_time: "2010-05-05T12:00:00.000Z",
-			student_name: "Bob-a-job",
+			first_name: "Bob-a-job",
+			last_name: "Jones",
 			student_email: "bob@job.com",
 			student_phone: "0789",
 			attendees: [
