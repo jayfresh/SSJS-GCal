@@ -49,10 +49,23 @@ Date.prototype.setISO8601 = function (string) {
 	this.setTime(Number(time));
 }
 
+function doNothing() {
+	return false;
+}
+
 $(document).ready(function() {
 	$("#bookingSystem").validate({
 		submitHandler: function(form) {
-			// TO-DO: $('#bookSlot'). replace the button with the new button
+			doNothing.savedParams = {
+				buttonVal: $('#bookSlot').val()
+			};
+			$('#bookSlot')
+				.bind("click", doNothing)
+				.css({
+					'cursor':'default',
+					'background-position':'0 -100px'
+				})
+				.val("Please wait...");
 			// TO-DO: maybe add a spinning loader
 			var dataString = "isAjax=true";
 			$(form).find('input').each(function(i, elem) {
@@ -73,6 +86,13 @@ $(document).ready(function() {
 							$('.recaptcha_only_if_incorrect_sol').css('cssText','display: block !important'); // weirdness because ReCAPTCHA uses !important so we have to get around that
 							$('#recaptcha_reload_btn').click();
 						}
+						$('#bookSlot')
+							.unbind('click', doNothing)
+							.css({
+								'cursor':'pointer',
+								'background-position':'0 -50px'
+							})
+							.val(doNothing.savedParams.buttonVal);
 					} else {
 						$toReplace = $('#wrap');
 						$("<div></div>")
