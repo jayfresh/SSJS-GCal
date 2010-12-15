@@ -420,6 +420,8 @@ SweetSoft = {};
 		}
 		//eventString += "&booked_by="+encodeURIComponent(data.student_email)
 		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_first_name="+encodeURIComponent(data.first_name)+"&booked_by_last_name="+encodeURIComponent(data.last_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date)+"&booked_by_phone="+encodeURIComponent(data.student_phone);
+		// JRL: also sending "booked_by_name" to ensure compatibility with previous version of SweetSpot.com
+		eventString += "&booked_by_name="+encodeURIComponent(data.first_name+" "+data.last_name);
 		if(eventString) {
 			var response, headers;
 			for(var i=0,il=account.notifications.length,notification;i<il;i++) {
