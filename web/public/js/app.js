@@ -50,10 +50,48 @@ Date.prototype.setISO8601 = function (string) {
 }
 
 $(document).ready(function() {
-	$("#bookingSystem").validate();
-});
-
-$(document).ready(function() {
+	$("#bookingSystem").validate({
+		submitHandler: function(form) {
+			// TO-DO: $('#bookSlot'). replace the button with the new button
+			// TO-DO: maybe add a spinning loader
+			var dataString = "isAjax=true";
+			$(form).find('input').each(function(i, elem) {
+				if(elem.name) {
+					if(elem.type==="radio" && !elem.checked) {
+						return true;
+					}
+					dataString += "&" + elem.name + "=" + encodeURIComponent(elem.value);
+				}
+			});
+			$.ajax({
+				url: '/createAppointment',
+				type: 'post',
+				data: dataString,
+				success: function(data) {
+					if(data.indexOf('error')===0) {
+						if(data.indexOf("incorrect-captcha-sol")!==-1) {
+							$('.recaptcha_only_if_incorrect_sol').css('cssText','display: block !important'); // weirdness because ReCAPTCHA uses !important so we have to get around that
+							$('#recaptcha_reload_btn').click();
+						}
+					} else {
+						$toReplace = $('#wrap');
+						$("<div></div>")
+							.html(data)
+							.find('#wrap')
+							.replaceAll($toReplace);
+					}
+				},
+				error: function() {
+					$('#bookingError')
+						.show()
+						.find('p')
+						.effect("highlight", {
+							color: '#ff3e63'
+						}, 2000);
+				}
+			});
+		}
+	});
 
 	$('.onlyjs').css('visibility', 'visible');
 	
@@ -123,5 +161,6 @@ $(document).ready(function() {
 		$radios.eq(i).click();
 	});
 	
+	// select the first slot
 	$radios.filter(':checked').eq(0).click();
 });

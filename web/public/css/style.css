@@ -353,3 +353,7 @@ input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earli
 #custom_theme_widget {
 }
 
+#bookingError {
+	display: none;
+	text-align: center;
+}

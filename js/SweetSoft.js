@@ -49,6 +49,7 @@ TO-DO: write the mechanism for editing/saving the admin info
 
 POST('/createAppointment', function() {
 	var query = this.request.body,
+		isAjax = query.isAjax,
 		options = {
 			superMumID: query.superMumID,
 			property: query.property,
@@ -59,7 +60,7 @@ POST('/createAppointment', function() {
 			student_phone: query.student_phone,
 			attendees: query.attendees
 		};
-	
+
 	// clean up data
 	if(options.attendees) {
 		options.attendees = options.attendees.split(",");
@@ -83,9 +84,12 @@ POST('/createAppointment', function() {
 	var captcha_status = response_lines[0];
 	var captcha_error = response_lines[1];
 	if(captcha_status === "false" && captcha_error) {
-		return redirect('/booking?accountID='+options.superMumID+'&property='+options.property+'&error='+encodeURIComponent(captcha_error));
+		if(isAjax) {
+			return "error="+encodeURIComponent(captcha_error);
+		} else {
+			return redirect('/booking?accountID='+options.superMumID+'&property='+options.property+'&error='+encodeURIComponent(captcha_error));
+		}
 	}
-	
 	SweetSoft.init();
 	var response = SweetSoft.createAppointment(options);
 	this.options = options;
@@ -374,7 +378,7 @@ SweetSoft = {};
 		if(!account) {
 			throw new Error("Error: SweetSoft.createAppointment: problem getting account "+data.superMumID);
 		}
-		var attendeeList = data.attendees,
+		var attendeeList = data.attendees || [],
 			attendees = [{
 				name: data.student_name,
 				email: data.student_email

@@ -20,7 +20,7 @@ system.use("recaptcha");
 
 enable('Sessions');
 
-/* fix for the system being in UTC and it being run in the UK, in BST - must change this back when we hit October 31st and go back to GMT - this time fix ONLY works for this case where we are 1 hour out
+/* fix for the system being in UTC and it being run in the UK, in BST - this time fix ONLY works for this case where we are 1 hour out
 
 2010	Sunday, 28 March, 01:00	->	Sunday, 31 October, 02:00
 2011	Sunday, 27 March, 01:00	->	Sunday, 30 October, 02:00

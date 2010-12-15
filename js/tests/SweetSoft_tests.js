@@ -1,3 +1,5 @@
+// TO-DO: tests for the isAjax changes
+
 SweetSoft.test_data = {
 	init: {
 		SweetSoftAccounts: [
