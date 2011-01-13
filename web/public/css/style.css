@@ -7,6 +7,7 @@ body {
 	line-height: 1.4em;
 	color: #858585;
 	font-size: 82.5%;
+	background-color: transparent; /* to make iframe transparent when coupled with allowTransparency="true" attribute on iframe */
 }
 
 .rounded {
