@@ -101,13 +101,16 @@ $(document).ready(function() {
 							.replaceAll($toReplace);
 					}
 				},
-				error: function() {
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					$('#bookingError')
 						.show()
 						.find('p')
 						.effect("highlight", {
 							color: '#ff3e63'
 						}, 2000);
+					if(console && console.log) {
+						console.log(XMLHttpRequest, textStatus, errorThrown);
+					}
 				}
 			});
 		}
