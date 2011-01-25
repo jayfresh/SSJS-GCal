@@ -383,6 +383,7 @@ SweetSoft = {};
 				name: data.student_name,
 				email: data.student_email
 			}];
+		doLog("attendeeList length is "+attendeeList.length+" and the first entry is "+attendeeList[0]);
 		for(var i=0, il=attendeeList.length, email; i<il; i++) {
 			email = attendeeList[i];
 			attendees.push({
