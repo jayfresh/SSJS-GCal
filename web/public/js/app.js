@@ -68,7 +68,7 @@ $(document).ready(function() {
 				.val("Please wait...");
 			// TO-DO: maybe add a spinning loader
 			var dataString = "isAjax=true";
-			$(form).find('input').each(function(i, elem) {
+			$(form).find('input, textarea').each(function(i, elem) {
 				if(elem.name) {
 					if(elem.type==="radio" && !elem.checked) {
 						return true;

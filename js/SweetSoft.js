@@ -383,7 +383,6 @@ SweetSoft = {};
 				name: data.student_name,
 				email: data.student_email
 			}];
-		doLog("attendeeList length is "+attendeeList.length+" and the first entry is "+attendeeList[0]);
 		for(var i=0, il=attendeeList.length, email; i<il; i++) {
 			email = attendeeList[i];
 			attendees.push({
@@ -419,7 +418,6 @@ SweetSoft = {};
 		if(eventObj && eventObj.content) {
 			eventString += "content="+encodeURIComponent(eventObj.content.toString()); // JRL: to make things simpler to debug, leave this out
 		}
-		//eventString += "&booked_by="+encodeURIComponent(data.student_email)
 		eventString += "booked_by="+encodeURIComponent(data.student_email)+"&booked_by_first_name="+encodeURIComponent(data.first_name)+"&booked_by_last_name="+encodeURIComponent(data.last_name)+"&address="+encodeURIComponent(data.property)+"&booking_datetime="+encodeURIComponent(data.start_time+" "+data.date)+"&booked_by_phone="+encodeURIComponent(data.student_phone);
 		// JRL: also sending "booked_by_name" to ensure compatibility with previous version of SweetSpot.com
 		eventString += "&booked_by_name="+encodeURIComponent(data.first_name+" "+data.last_name);
