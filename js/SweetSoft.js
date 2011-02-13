@@ -340,7 +340,7 @@ SweetSoft = {};
 		eventTitleTemplate: "Viewing for <%=property%>",
 		eventDescriptionTemplate: "Hello <%=student_name%>, \n\n" +
 		"Your booking for <%=property%> is on <%=date%> at <%=start_time%>. \n\n" + 
-		"If you need to reschedule your booking, please contact your SuperMum (<%=supermum_name%>) on: <%=supermum_phone%>. \n\n" +
+		"If you need to reschedule your booking, please contact your SweetSpot representative (<%=supermum_name%>) on: <%=supermum_phone%>. \n\n" +
 		"Your contact details: <%=student_phone%>, <%=student_email%>. \n\n" +
 		"See you soon! \n\nSweetSpot",
 		slotLengthMinutes: 30,

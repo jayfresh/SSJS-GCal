@@ -74,7 +74,7 @@ SweetSoft.test_data = {
 		},
 		options_to_use: {
 			title: "Viewing for 53 Kenilworth Avenue",
-			description: "Hello Bob-a-job Jones, \n\nYour booking for 53 Kenilworth Avenue is on 5/5/2010 at 13:00. \n\nIf you need to reschedule your booking, please contact your SuperMum (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
+			description: "Hello Bob-a-job Jones, \n\nYour booking for 53 Kenilworth Avenue is on 5/5/2010 at 13:00. \n\nIf you need to reschedule your booking, please contact your SweetSpot representative (Lady Gaga) on: 07890 123456. \n\nYour contact details: 0789, bob@job.com. \n\nSee you soon! \n\nSweetSpot",
 			where: "53 Kenilworth Avenue",
 			startTime: (function() {
 				var d = new Date("Wed May 05 2010 13:00:00 GMT+0100 (BST)");
