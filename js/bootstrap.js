@@ -97,8 +97,8 @@ var Log = {};
 
 /*GET('/tests', function() {
 	system.use("jsunity_0_6");
-	system.use("tests.GCal_tests");
-	//system.use("tests.SweetSoft_tests");
+	//system.use("tests.GCal_tests");
+	system.use("tests.SweetSoft_tests");
 	//system.use("tests.SS_notification_tests");
 
 	jsUnity.attachAssertions();
@@ -107,11 +107,11 @@ var Log = {};
 	    out += "<div>" + s + "</div>";
 	};
 	jsUnity.run(
-		GCal.tests.newEvent,
-		GCal.tests.getEventsByTime
+		//GCal.tests.newEvent,
+		//GCal.tests.getEventsByTime
 		//SweetSoft.tests.createAppointment,
 		//SweetSoft.tests.init,
-		//SweetSoft.tests.listFreeSlots,
+		SweetSoft.tests.listFreeSlots
 		//SS_notification_tests.admin,
 		//SS_notification_tests.notification
 	);

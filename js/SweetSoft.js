@@ -267,9 +267,9 @@ POST('/deleteSweetSoftAccount', function() {
 
 GET('/listSweetSoftAccounts', function() {
 	try {
-		is_logged_in(this.session);
+		//is_logged_in(this.session);
 	} catch(ex) {
-		return redirect('/login');
+		//return redirect('/login');
 	}
 	var out = "";
 	var accounts = SweetSoft.listAccounts();
@@ -537,8 +537,18 @@ SweetSoft = {};
 			}
 			return start;
 		}
-		var startTracker = new Date.now().clearTime().add(2).day(), // I think this is where the time between now and the earliest bookable slot is set
-			freeSlotEndTracker,
+		var startTracker = new Date.now().clearTime().add(2).day(), // This is where the time between now and the earliest bookable slot is set
+			bookingDay = startTracker.getDayName();
+		if(bookingDay === "Saturday" || bookingDay === "Sunday" || bookingDay === "Monday") {
+			// if booked on Thursday, make earliest bookable day Monday
+			// if booked on Friday, make earliest bookable day Tuesday
+			// if booked on Saturday, make earliest bookable day Wednesday
+			startTracker = startTracker.add(2).day();
+		} else if(bookingDay === "Tuesday") {
+			// if booked on Sunday, make earliest bookable day Wednesday
+			startTracker = startTracker.add(1).day();
+		}
+		var freeSlotEndTracker,
 			endTracker,
 			dayTracker,
 			duration = SweetSoft.config.slotLengthMinutes,
