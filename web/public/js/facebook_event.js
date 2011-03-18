@@ -20,7 +20,7 @@ window.fbAsyncInit = function() {
 		xfbml: true
 	});
 	
-	$('a.panel').click(function(e) {
+	$('.panel').click(function(e) {
 		e.preventDefault();
 		createEvent(facebook_options, function(response) {
 			if(response.id) {

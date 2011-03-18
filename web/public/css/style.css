@@ -360,7 +360,7 @@ input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earli
 }
 
 /* thanks page */
-a.panel {
+.panel {
 	overflow: hidden;
 	background-color: #545454;
 	color: #eee;
@@ -372,10 +372,11 @@ a.panel {
 	text-decoration: none;
 	line-height: 1.25em;
 }
-a.panel:hover {
+.panel:hover {
 	background-color: #999;
+	cursor: pointer;
 }
-a.panel .grid4col {
+.panel .grid4col {
 	padding-left: 10px;
 }
 #options {
