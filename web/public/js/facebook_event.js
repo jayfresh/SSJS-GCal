@@ -33,6 +33,7 @@ window.fbAsyncInit = function() {
 								$('#results').text('event created 2nd time round! <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
 							} else {
 								$('#results').text('there was a problem creating the event, even though you are logged in! sorry, please try again later.');
+								console.log(response);
 							}
 						});
 					} else {
