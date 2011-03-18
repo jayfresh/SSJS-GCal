@@ -24,7 +24,7 @@ window.fbAsyncInit = function() {
 		e.preventDefault();
 		createEvent(facebook_options, function(response) {
 			if(response.id) {
-				$('#results').text('event created! <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
+				$('#results').html('Event created - <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
 			} else {
 				FB.login(function(response) {
 					if(response.session && response.perms.indexOf('create_event')!==-1) {
@@ -33,7 +33,6 @@ window.fbAsyncInit = function() {
 								$('#results').text('event created 2nd time round! <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
 							} else {
 								$('#results').text('there was a problem creating the event, even though you are logged in! sorry, please try again later.');
-								console.log(response);
 							}
 						});
 					} else {

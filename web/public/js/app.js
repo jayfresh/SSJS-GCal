@@ -101,7 +101,6 @@ $(document).ready(function() {
 							.replaceAll($toReplace);
 						// now add the facebook_event script in
 						$.getScript('/js/facebook_event.js', function() {
-							console.log('loading facebook script', arguments);
 							loadFacebookScript();
 						});
 					}
