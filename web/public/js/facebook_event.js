@@ -5,6 +5,9 @@ function createEvent(options, callback) {
 			callback(response);
 		});
 }
+function disableButton() {
+	$('.panel').unbind('click');
+}
 window.facebook_options = {
 	name: $('#options_name').text(),
 	start_time: $('#options_start_time').text(),
@@ -25,12 +28,14 @@ window.fbAsyncInit = function() {
 		createEvent(facebook_options, function(response) {
 			if(response.id) {
 				$('#results').html('Event created - <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
+				disableButton();
 			} else {
 				FB.login(function(response) {
 					if(response.session && response.perms.indexOf('create_event')!==-1) {
 						createEvent(facebook_options, function(response) {
 							if(response.id) {
-								$('#results').text('event created 2nd time round! <a href="http://www.facebook.com/event.php?eid='+response.id+'">click to visit</a>');
+								$('#results').html('Event created 2nd time round! <a href="http://www.facebook.com/event.php?eid='+response.id+'">Click to visit</a>');
+								disableButton();
 							} else {
 								$('#results').text('there was a problem creating the event, even though you are logged in! sorry, please try again later.');
 							}
