@@ -112,6 +112,13 @@ $(document).ready(function() {
 						.effect("highlight", {
 							color: '#ff3e63'
 						}, 2000);
+					$('#bookSlot')
+							.unbind('click', doNothing)
+							.css({
+								'cursor':'pointer',
+								'background-position':'0 -50px'
+							})
+							.val(doNothing.savedParams.buttonVal);
 					if(console && console.log) {
 						console.log(XMLHttpRequest, textStatus, errorThrown);
 					}
