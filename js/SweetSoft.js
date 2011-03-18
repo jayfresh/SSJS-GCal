@@ -399,11 +399,12 @@ SweetSoft = {};
 		var format = "d/M/yyyy";
 		data.date = startTime.toString(format);
 		data.start_time = startTime.toString('HH:mm');
-		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
-		startTime = startTime.toISOString();
 		data.iso_start_time = startTime.toString('yyyy/MM/dd HH:mm');
-		endTime = endTime.toISOString();
+		startTime = startTime.toISOString();
+		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
 		data.iso_end_time = endTime.toString('yyyy/MM/dd HH:mm');
+		endTime = endTime.toISOString();
+
 		var options = {
 			title: string_template(config.eventTitleTemplate, data),
 			description: string_template(config.eventDescriptionTemplate, data),
