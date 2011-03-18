@@ -91,7 +91,8 @@ POST('/createAppointment', function() {
 		}
 	}
 	SweetSoft.init();
-	var response = SweetSoft.createAppointment(options);
+	var response = SweetSoft.createAppointment(options); // returns nothing as it happens
+	options.is_test = true; // JRL: debug
 	this.options = options;
 	return template('/thanks.html');
 });
@@ -400,7 +401,9 @@ SweetSoft = {};
 		data.start_time = startTime.toString('HH:mm');
 		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
 		startTime = startTime.toISOString();
+		data.iso_start_time = startTime;
 		endTime = endTime.toISOString();
+		data.iso_end_time = endTime;
 		var options = {
 			title: string_template(config.eventTitleTemplate, data),
 			description: string_template(config.eventDescriptionTemplate, data),

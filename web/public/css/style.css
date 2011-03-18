@@ -358,3 +358,26 @@ input#bookSlot:focus, #bookSlot:active, input#bookSlot::-moz-focus-inner, #earli
 	display: none;
 	text-align: center;
 }
+
+/* thanks page */
+a.panel {
+	overflow: hidden;
+	background-color: #545454;
+	color: #eee;
+	font-size: 1.25em;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	display: block;
+	text-decoration: none;
+	line-height: 1.25em;
+}
+a.panel:hover {
+	background-color: #999;
+}
+a.panel .grid4col {
+	padding-left: 10px;
+}
+#options {
+	display: none;
+}

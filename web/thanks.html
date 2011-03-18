@@ -12,6 +12,7 @@
 	<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script> 
 	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script> 
 	<script type="text/javascript" src="/js/slider.js"></script>
+	<script type="text/javascript" src="/js/facebook_event.js"></script>
 	
 </head>
 
@@ -25,6 +26,14 @@
 				[% IF options.attendees %]
 				<p class="grid4col">You have sent email invitations to the following addresses: [% options.attendees %]</p>
 				[% END %]
+				[% IF options.is_test %]
+				<div id="fb-root"></div>
+				<a href="#" class="grid6col panel margintop">
+					<p class="grid4col left">Why not create a Facebook event and invite your housemates?</p>
+					<img class="grid2col right" src="images/event_icon.png" />
+					<p class="grid4col left" id="results"></p>
+				</a>
+				[% END %]
 			</div>
 			<div class="grid3col left marginleft">
 				<h2>Your Booking:</h2>
@@ -35,10 +44,13 @@
 				<p class="grid1col orange left bold">Date:</p><p class="grid2col right">[% options.date %]</p>
 			</div>
 		</div>		
-		
+		<div id="options">
+			<div id="options_name">Viewing at [% options.property %]</div>
+			<div id="options_start_time">[% options.iso_start_time %]</div>
+			<div id="options_end_time">[% options.iso_end_time %]</div>
+			<div id="location">[% options.property %]</div>
+			<div id="privacy_type">PRIVATE</div>
+		</div>
 	</div>
-
-
-
 </body>
 </html>
