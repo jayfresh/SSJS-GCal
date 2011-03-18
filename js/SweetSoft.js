@@ -400,9 +400,9 @@ SweetSoft = {};
 		data.date = startTime.toString(format);
 		data.start_time = startTime.toString('HH:mm');
 		data.iso_start_time = startTime.toString('yyyy/MM/dd HH:mm');
-		startTime = startTime.toISOString();
 		var endTime = startTime.clone().add(config.slotLengthMinutes).minutes();
 		data.iso_end_time = endTime.toString('yyyy/MM/dd HH:mm');
+		startTime = startTime.toISOString();
 		endTime = endTime.toISOString();
 
 		var options = {
