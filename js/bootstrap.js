@@ -12,6 +12,7 @@ given a location for configuration, use that for: event description template, li
 system.use("com.joyent.Sammy");
 system.use("com.joyent.Resource");
 system.use("com.google.code.date"); // include datejs lib
+system.use("org.json.json2");
 system.use("GCal");
 system.use("GID");
 system.use("SweetSoft");
