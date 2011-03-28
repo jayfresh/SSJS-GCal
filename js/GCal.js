@@ -347,12 +347,6 @@ var GCal = {};
 		if (type === 'events') {
 			url += "/"+calendarID+"/private/full";
 			var d = new Date();
-			doLog({
-				'minType': typeof options.startMin
-			});
-			doLog({
-				'newDate': d.toISOString()
-			});
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
 			query = "start-min="+startMin+"&start-max="+startMax;

@@ -92,7 +92,6 @@ POST('/createAppointment', function() {
 	}
 	SweetSoft.init();
 	var response = SweetSoft.createAppointment(options); // returns nothing as it happens
-	options.is_test = true; // JRL: debug
 	this.options = options;
 	return template('/thanks.html');
 });
