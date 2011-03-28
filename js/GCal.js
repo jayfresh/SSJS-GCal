@@ -346,11 +346,12 @@ var GCal = {};
 		}
 		if (type === 'events') {
 			url += "/"+calendarID+"/private/full";
+			var d = new Date();
 			doLog({
 				'minType': typeof options.startMin
 			});
 			doLog({
-				'newDate': (new Date).toISOString()
+				'newDate': d.toISOString()
 			});
 			var startMin = options.startMin.toISOString();
 			var startMax = options.startMax.toISOString();
