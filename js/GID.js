@@ -48,6 +48,18 @@ GET('/login', function() {
 	return redirect(uri+'?'+objToParamString(params));
 });
 
+GET('/sessionTest', function() {
+	var q = this.request.query,
+		session = this.session;
+	if(q.name) {
+		session.name = q.name;
+		session.save();
+		return "saved!";
+	} else {
+		return objToString(this.session);
+	}
+});
+
 /* example response:
 openid.ns=http://specs.openid.net/auth/2.0
 &openid.mode=id_res

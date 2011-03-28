@@ -37,14 +37,14 @@ window.fbAsyncInit = function() {
 								$('#results').html('Event created 2nd time round! <a href="http://www.facebook.com/event.php?eid='+response.id+'">Click to visit</a>');
 								disableButton();
 							} else {
-								$('#results').text('there was a problem creating the event, even though you are logged in! sorry, please try again later.');
+								$('#results').text('There was a problem creating the event, even though you are logged in! sorry, please try again later.');
 							}
 						});
 					} else {
 						if(response.error && response.error.type === "OAuthException" || response.status === "notConnected") {
-							$('#results').text('you have to let us into your account to create events!');
+							$('#results').text('You have to let us into your account to create events!');
 						} else {
-							$('#results').text('there was a problem logging in');
+							$('#results').text('There was a problem logging in');
 						}
 					}
 				}, { perms: 'create_event' });
