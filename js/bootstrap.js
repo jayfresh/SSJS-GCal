@@ -21,6 +21,18 @@ system.use("recaptcha");
 
 enable('Sessions');
 
+/* fix for toISOString not being present on joyent smartly */
+Date.prototype.toISOString = function() {
+ function pad(n){return n<10 ? '0'+n : n}
+ return this.getUTCFullYear()+'-'
+     + pad(this.getUTCMonth()+1)+'-'
+     + pad(this.getUTCDate())+'T'
+     + pad(this.getUTCHours())+':'
+     + pad(this.getUTCMinutes())+':'
+     + pad(this.getUTCSeconds())+'.'
+     + pad(this.getUTCMilliseconds())+'Z';
+};
+
 /* fix for the system being in UTC and it being run in the UK, in BST - this time fix ONLY works for this case where we are 1 hour out
 
 2010	Sunday, 28 March, 01:00	->	Sunday, 31 October, 02:00
