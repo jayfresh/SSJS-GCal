@@ -131,3 +131,19 @@ GET('/admin', function() {
 GET('/', function() {
 	return redirect('/index.html');
 });
+
+GET('/dump', function() {
+	var types = [
+		"SweetSoftAccount",
+		"SweetSoftAdminInfo",
+		"GCalAccount"
+	],
+	type,
+	i,
+	out = "";
+	for(i=0; i<types.length; i++) {
+		type = new Resource(types[i]);
+		out += JSON.stringify(type.search({}));
+	}
+  return out;
+});
