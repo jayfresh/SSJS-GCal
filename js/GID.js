@@ -54,7 +54,7 @@ GET('/sessionTest', function() {
 	if(q.name) {
 		session.name = q.name;
 		session.save();
-		return "saved!";
+		return "saved dude!";
 	} else {
 		return objToString(this.session);
 	}
